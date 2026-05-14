@@ -138,13 +138,13 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 1.15rem;
-      height: 1.15rem;
+      width: 1rem;
+      height: 1rem;
       margin-left: 0.35rem;
       border-radius: 999px;
       background: #c53a2f;
       color: #fff;
-      font-size: 0.78rem;
+      font-size: 0.68rem;
       line-height: 1;
       vertical-align: middle;
       box-shadow: 0 4px 10px rgba(197, 58, 47, 0.25);
@@ -172,13 +172,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 18px;
-      height: 18px;
+      width: 14px;
+      height: 14px;
       border-radius: 999px;
       background: #c53a2f;
       color: #fff;
-      border: 2px solid #fff8ef;
-      font-size: 11px;
+      border: 1.5px solid #fff8ef;
+      font-size: 9px;
       font-weight: 700;
       line-height: 1;
       box-shadow: 0 3px 10px rgba(197, 58, 47, 0.35);
@@ -308,9 +308,10 @@
         ? '<span class="flag flag-faith" title="Faith school">F</span>'
         : '<span class="flag flag-nonfaith" title="Non-faith school">N</span>';
       const marker = L.circleMarker([school.latitude, school.longitude], {
-        radius: 7,
-        weight: 1.5,
-        color: "#ffffff",
+        radius: 7.5,
+        weight: 2.75,
+        color: "#182126",
+        opacity: 0.95,
         fillColor: markerColor(school.rank),
         fillOpacity: 0.92
       });
