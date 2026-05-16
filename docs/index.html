@@ -348,7 +348,7 @@
         <button id="clearPrice" class="secondary" type="button">Clear price filter</button>
         <div id="priceStatus" class="commute-status">Uses terraced sales within 0.5 miles in the last 2 years.</div>
         <div class="commute-note">Source: HM Land Registry Price Paid Data. Small samples can be lumpy, so each popup includes the sale count.</div>
-        <div class="commute-title">Filter by school type and FSM</div>
+        <div class="commute-title">Filter by school type and free school meals (FSM)</div>
         <div class="commute-grid">
           <label>
             Faith status
@@ -359,7 +359,7 @@
             </select>
           </label>
           <label>
-            <span class="range-label"><span>Max FSM eligibility</span><strong id="fsmMaxValue">100%</strong></span>
+            <span class="range-label"><span>Max free school meals eligibility</span><strong id="fsmMaxValue">100%</strong></span>
             <input id="fsmMax" type="range" min="0" max="100" step="1" value="100">
           </label>
         </div>
@@ -671,7 +671,7 @@
         : filterState.faith === "nonfaith"
           ? "non-faith schools"
           : "faith and non-faith schools";
-      schoolFilterStatusEl.textContent = `${matches.length} schools match all active filters. Showing ${faithLabel} with FSM eligibility <= ${filterState.fsmMax}%.`;
+      schoolFilterStatusEl.textContent = `${matches.length} schools match all active filters. Showing ${faithLabel} with free school meals eligibility <= ${filterState.fsmMax}%.`;
     }
 
     function activate(rank, options = {}) {
