@@ -81,6 +81,62 @@
       font-size: 0.93rem;
       line-height: 1.45;
     }
+    .commute-tool {
+      display: grid;
+      gap: 10px;
+      margin: 0 0 18px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.74);
+    }
+    .commute-title {
+      font-weight: 700;
+      font-size: 0.98rem;
+    }
+    .commute-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    label {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+    select,
+    input,
+    button {
+      width: 100%;
+      border: 1px solid rgba(24, 33, 38, 0.22);
+      border-radius: 8px;
+      background: #fffdf8;
+      color: var(--ink);
+      font: inherit;
+      min-height: 34px;
+      padding: 7px 9px;
+    }
+    button {
+      cursor: pointer;
+      font-weight: 700;
+      background: #182126;
+      color: #fffdf8;
+    }
+    button.secondary {
+      background: #fffdf8;
+      color: var(--ink);
+    }
+    .commute-status {
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.35;
+    }
+    .commute-note {
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
     .table-wrap {
       border: 1px solid var(--border);
       border-radius: 16px;
@@ -123,6 +179,11 @@
     .borough {
       color: var(--muted);
       font-size: 0.82rem;
+    }
+    .commute-time {
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 650;
     }
     #map {
       height: 100vh;
@@ -187,6 +248,23 @@
       background: #225ea8;
       box-shadow: 0 3px 10px rgba(34, 94, 168, 0.35);
     }
+    .origin-dot {
+      display: grid;
+      place-items: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      background: #182126;
+      border: 3px solid #fff8ef;
+      box-shadow: 0 8px 18px rgba(24, 33, 38, 0.35);
+    }
+    .origin-dot::after {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #fff8ef;
+    }
     @media (max-width: 980px) {
       body {
         overflow: auto;
@@ -220,6 +298,27 @@
       <div class="method">
         Composite score = average percentile across Reading scaled score, Maths scaled score, GPS scaled score, and the combined Reading/Writing/Maths percentages at the expected and higher standards. Higher values are better across all five measures.
       </div>
+      <div class="commute-tool">
+        <div class="commute-title">Find schools near a commute point</div>
+        <div class="commute-grid">
+          <label>
+            Minutes
+            <input id="commuteMinutes" type="number" min="5" max="90" step="5" value="30">
+          </label>
+          <label>
+            Mode
+            <select id="commuteMode">
+              <option value="transit">Transit estimate</option>
+              <option value="cycle">Cycle</option>
+              <option value="walk">Walk</option>
+              <option value="drive">Drive</option>
+            </select>
+          </label>
+        </div>
+        <button id="clearCommute" class="secondary" type="button">Show all schools</button>
+        <div id="commuteStatus" class="commute-status">Click any point on the map to show the best schools within that commute.</div>
+        <div class="commute-note">Times are approximate map-distance estimates, useful for shortlisting before checking live TfL or route details.</div>
+      </div>
       <div class="table-wrap">
         <table>
           <thead>
@@ -246,8 +345,25 @@
     }).addTo(map);
 
     const rowsEl = document.getElementById("rankings");
+    const commuteMinutesEl = document.getElementById("commuteMinutes");
+    const commuteModeEl = document.getElementById("commuteMode");
+    const clearCommuteEl = document.getElementById("clearCommute");
+    const commuteStatusEl = document.getElementById("commuteStatus");
     const markerByRank = new Map();
+    const schoolLayers = new Map();
     const rowByRank = new Map();
+    const commuteState = {
+      active: false,
+      origin: null,
+      originMarker: null,
+      rangeCircle: null
+    };
+    const commuteModes = {
+      transit: { label: "transit estimate", speedKmh: 18, routeFactor: 1.35, fixedMinutes: 8 },
+      cycle: { label: "cycle", speedKmh: 14, routeFactor: 1.25, fixedMinutes: 3 },
+      walk: { label: "walk", speedKmh: 4.8, routeFactor: 1.2, fixedMinutes: 1 },
+      drive: { label: "drive", speedKmh: 22, routeFactor: 1.35, fixedMinutes: 6 }
+    };
 
     function markerColor(rank) {
       const t = (rank - 1) / 299;
@@ -267,11 +383,15 @@
       const faithTypeLabel = school.is_faith_school
         ? `Faith (${school.religious_denomination})`
         : 'Non-faith';
+      const commuteLine = commuteState.active && Number.isFinite(school.commute_minutes)
+        ? `<p>Estimated commute: <strong>${school.commute_minutes.toFixed(0)} min</strong></p>`
+        : '';
       return `
         <div class="popup">
           <h3>#${school.rank} ${school.school_name} ${faithFlag} ${fsmFlag} ${ratioFlag}</h3>
           <p><strong>London rank:</strong> #${school.rank} · <strong>${school.borough} rank:</strong> #${school.borough_rank}</p>
           ${nonFaithRankLine}
+          ${commuteLine}
           <p>School type: <strong>${faithTypeLabel}</strong></p>
           <p><strong>${school.borough}</strong> · ${school.age_range} · Eligible pupils: ${school.eligible_pupils}</p>
           <p>Free school meals eligible: <strong>${school.fsm_percent}%</strong></p>
@@ -283,6 +403,129 @@
           <p class="minor">${school.full_address}</p>
         </div>
       `;
+    }
+
+    function distanceKm(a, b) {
+      const earthKm = 6371;
+      const toRad = (degrees) => degrees * Math.PI / 180;
+      const dLat = toRad(b.lat - a.lat);
+      const dLng = toRad(b.lng - a.lng);
+      const lat1 = toRad(a.lat);
+      const lat2 = toRad(b.lat);
+      const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+      return 2 * earthKm * Math.asin(Math.sqrt(h));
+    }
+
+    function estimateMinutes(origin, school) {
+      const mode = commuteModes[commuteModeEl.value] || commuteModes.transit;
+      const km = distanceKm(origin, { lat: school.latitude, lng: school.longitude }) * mode.routeFactor;
+      return (km / mode.speedKmh * 60) + mode.fixedMinutes;
+    }
+
+    function setLayerDimmed(school, dimmed) {
+      const layers = schoolLayers.get(school.rank);
+      if (!layers) return;
+      layers.marker.setStyle({
+        opacity: dimmed ? 0.28 : 0.95,
+        fillOpacity: dimmed ? 0.18 : 0.92
+      });
+      layers.overlays.forEach((overlay) => overlay.setOpacity(dimmed ? 0.22 : 1));
+    }
+
+    function renderRows(rows) {
+      rowsEl.innerHTML = "";
+      rowByRank.clear();
+      rows.forEach((school) => {
+        const fsmFlag = school.fsm_percent > 25 ? '<span class="flag" title="More than 25% eligible for free school meals">!</span>' : '';
+        const ratioFlag = school.anomalous_low_ptr ? '<span class="flag flag-ratio" title="Best 5% pupil-to-teacher ratio in London">T</span>' : '';
+        const faithFlag = school.is_faith_school
+          ? '<span class="flag flag-faith" title="Faith school">F</span>'
+          : '<span class="flag flag-nonfaith" title="Non-faith school">N</span>';
+        const commuteText = commuteState.active && Number.isFinite(school.commute_minutes)
+          ? `<div class="commute-time">${school.commute_minutes.toFixed(0)} min estimated commute</div>`
+          : '';
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="rank">${school.rank}</td>
+          <td>
+            <div class="school">${school.school_name} ${faithFlag} ${fsmFlag} ${ratioFlag}</div>
+            <div class="borough">${school.borough}</div>
+            ${commuteText}
+          </td>
+          <td>${school.composite_score.toFixed(1)}</td>
+        `;
+        tr.addEventListener("click", () => activate(school.rank, { center: true }));
+        rowsEl.appendChild(tr);
+        rowByRank.set(school.rank, tr);
+      });
+    }
+
+    function updateCommuteSearch(origin = commuteState.origin) {
+      if (!origin) return;
+      commuteState.active = true;
+      commuteState.origin = origin;
+
+      const minutes = Math.max(5, Math.min(90, Number(commuteMinutesEl.value) || 30));
+      commuteMinutesEl.value = minutes;
+      const mode = commuteModes[commuteModeEl.value] || commuteModes.transit;
+
+      schools.forEach((school) => {
+        school.commute_minutes = estimateMinutes(origin, school);
+      });
+      const matches = schools
+        .filter((school) => school.commute_minutes <= minutes)
+        .sort((a, b) => a.rank - b.rank);
+
+      schools.forEach((school) => setLayerDimmed(school, !matches.includes(school)));
+      renderRows(matches);
+
+      if (commuteState.originMarker) commuteState.originMarker.setLatLng(origin);
+      else {
+        const originIcon = L.divIcon({
+          className: "",
+          html: '<div class="origin-dot" title="Commute starting point"></div>',
+          iconSize: [20, 20],
+          iconAnchor: [10, 10]
+        });
+        commuteState.originMarker = L.marker(origin, { icon: originIcon, keyboard: false }).addTo(map);
+      }
+
+      const rangeMeters = (minutes - mode.fixedMinutes) / 60 * mode.speedKmh / mode.routeFactor * 1000;
+      if (commuteState.rangeCircle) {
+        commuteState.rangeCircle.setLatLng(origin);
+        commuteState.rangeCircle.setRadius(Math.max(0, rangeMeters));
+      } else {
+        commuteState.rangeCircle = L.circle(origin, {
+          radius: Math.max(0, rangeMeters),
+          color: "#045d56",
+          weight: 1.5,
+          fillColor: "#045d56",
+          fillOpacity: 0.08
+        }).addTo(map);
+      }
+
+      commuteStatusEl.textContent = matches.length
+        ? `${matches.length} schools within ${minutes} min by ${mode.label}. Showing best ranked first.`
+        : `No top-300 schools found within ${minutes} min by ${mode.label}.`;
+    }
+
+    function clearCommuteSearch() {
+      commuteState.active = false;
+      commuteState.origin = null;
+      schools.forEach((school) => {
+        delete school.commute_minutes;
+        setLayerDimmed(school, false);
+      });
+      if (commuteState.originMarker) {
+        map.removeLayer(commuteState.originMarker);
+        commuteState.originMarker = null;
+      }
+      if (commuteState.rangeCircle) {
+        map.removeLayer(commuteState.rangeCircle);
+        commuteState.rangeCircle = null;
+      }
+      commuteStatusEl.textContent = "Click any point on the map to show the best schools within that commute.";
+      renderRows(schools);
     }
 
     function activate(rank, options = {}) {
@@ -315,10 +558,11 @@
         fillColor: markerColor(school.rank),
         fillOpacity: 0.92
       });
-      marker.bindPopup(popupHtml(school));
+      marker.bindPopup(() => popupHtml(school));
       marker.on("click", () => activate(school.rank));
       marker.addTo(map);
       markerByRank.set(school.rank, marker);
+      schoolLayers.set(school.rank, { marker, overlays: [] });
       bounds.push([school.latitude, school.longitude]);
 
       if (school.fsm_percent > 25) {
@@ -328,11 +572,12 @@
           iconSize: [18, 18],
           iconAnchor: [-1, 17]
         });
-        L.marker([school.latitude, school.longitude], {
+        const flagOverlay = L.marker([school.latitude, school.longitude], {
           icon: flagIcon,
           keyboard: false,
           interactive: false
         }).addTo(map);
+        schoolLayers.get(school.rank).overlays.push(flagOverlay);
       }
 
       if (school.anomalous_low_ptr) {
@@ -342,27 +587,20 @@
           iconSize: [18, 18],
           iconAnchor: [19, 1]
         });
-        L.marker([school.latitude, school.longitude], {
+        const ratioOverlay = L.marker([school.latitude, school.longitude], {
           icon: ratioIcon,
           keyboard: false,
           interactive: false
         }).addTo(map);
+        schoolLayers.get(school.rank).overlays.push(ratioOverlay);
       }
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="rank">${school.rank}</td>
-        <td>
-          <div class="school">${school.school_name} ${faithFlag} ${fsmFlag} ${ratioFlag}</div>
-          <div class="borough">${school.borough}</div>
-        </td>
-        <td>${school.composite_score.toFixed(1)}</td>
-      `;
-      tr.addEventListener("click", () => activate(school.rank, { center: true }));
-      rowsEl.appendChild(tr);
-      rowByRank.set(school.rank, tr);
     });
 
+    renderRows(schools);
+    map.on("click", (event) => updateCommuteSearch(event.latlng));
+    commuteMinutesEl.addEventListener("change", () => updateCommuteSearch());
+    commuteModeEl.addEventListener("change", () => updateCommuteSearch());
+    clearCommuteEl.addEventListener("click", clearCommuteSearch);
     map.fitBounds(bounds, { padding: [26, 26] });
   </script>
 </body>
