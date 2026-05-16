@@ -99,6 +99,15 @@
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
+    .range-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: baseline;
+    }
+    input[type="range"] {
+      accent-color: var(--accent);
+    }
     label {
       display: grid;
       gap: 5px;
@@ -320,7 +329,7 @@
           </label>
         </div>
         <button id="clearCommute" class="secondary" type="button">Show all schools</button>
-        <div id="commuteStatus" class="commute-status">Click any point on the map to show the best schools within that commute.</div>
+        <div id="commuteStatus" class="commute-status">Map clicks set commute points; marker clicks open school details.</div>
         <div class="commute-note">Times are approximate map-distance estimates, useful for shortlisting before checking live TfL or route details.</div>
         <div class="commute-title">Filter by nearby terraced-house sold prices</div>
         <div class="commute-grid">
@@ -339,6 +348,23 @@
         <button id="clearPrice" class="secondary" type="button">Clear price filter</button>
         <div id="priceStatus" class="commute-status">Uses terraced sales within 0.5 miles in the last 2 years.</div>
         <div class="commute-note">Source: HM Land Registry Price Paid Data. Small samples can be lumpy, so each popup includes the sale count.</div>
+        <div class="commute-title">Filter by school type and FSM</div>
+        <div class="commute-grid">
+          <label>
+            Faith status
+            <select id="faithFilter">
+              <option value="all">Faith and non-faith</option>
+              <option value="faith">Faith schools only</option>
+              <option value="nonfaith">Non-faith schools only</option>
+            </select>
+          </label>
+          <label>
+            <span class="range-label"><span>Max FSM eligibility</span><strong id="fsmMaxValue">100%</strong></span>
+            <input id="fsmMax" type="range" min="0" max="100" step="1" value="100">
+          </label>
+        </div>
+        <button id="clearSchoolFilters" class="secondary" type="button">Clear school filters</button>
+        <div id="schoolFilterStatus" class="commute-status">Showing faith and non-faith schools at any free-school-meals level.</div>
       </div>
       <div class="table-wrap">
         <table>
@@ -374,6 +400,11 @@
     const priceMetricEl = document.getElementById("priceMetric");
     const clearPriceEl = document.getElementById("clearPrice");
     const priceStatusEl = document.getElementById("priceStatus");
+    const faithFilterEl = document.getElementById("faithFilter");
+    const fsmMaxEl = document.getElementById("fsmMax");
+    const fsmMaxValueEl = document.getElementById("fsmMaxValue");
+    const clearSchoolFiltersEl = document.getElementById("clearSchoolFilters");
+    const schoolFilterStatusEl = document.getElementById("schoolFilterStatus");
     const markerByRank = new Map();
     const schoolLayers = new Map();
     const rowByRank = new Map();
@@ -393,6 +424,10 @@
       active: false,
       maxPrice: null,
       metric: "median"
+    };
+    const filterState = {
+      faith: "all",
+      fsmMax: 100
     };
 
     function markerColor(rank) {
@@ -586,6 +621,23 @@
       applyFilters();
     }
 
+    function updateSchoolFilters() {
+      filterState.faith = faithFilterEl.value;
+      filterState.fsmMax = Math.max(0, Math.min(100, Number(fsmMaxEl.value) || 0));
+      fsmMaxEl.value = filterState.fsmMax;
+      fsmMaxValueEl.textContent = `${filterState.fsmMax}%`;
+      applyFilters();
+    }
+
+    function clearSchoolFilters() {
+      filterState.faith = "all";
+      filterState.fsmMax = 100;
+      faithFilterEl.value = filterState.faith;
+      fsmMaxEl.value = filterState.fsmMax;
+      fsmMaxValueEl.textContent = "100%";
+      applyFilters();
+    }
+
     function applyFilters() {
       const commuteMinutes = Math.max(5, Math.min(90, Number(commuteMinutesEl.value) || 30));
       const commuteMode = commuteModes[commuteModeEl.value] || commuteModes.transit;
@@ -594,7 +646,12 @@
           const commuteOk = !commuteState.active || school.commute_minutes <= commuteMinutes;
           const selectedPrice = priceValue(school);
           const priceOk = !priceState.active || (Number.isFinite(selectedPrice) && selectedPrice <= priceState.maxPrice);
-          return commuteOk && priceOk;
+          const faithOk =
+            filterState.faith === "all" ||
+            (filterState.faith === "faith" && school.is_faith_school) ||
+            (filterState.faith === "nonfaith" && !school.is_faith_school);
+          const fsmOk = Number.isFinite(school.fsm_percent) && school.fsm_percent <= filterState.fsmMax;
+          return commuteOk && priceOk && faithOk && fsmOk;
         })
         .sort((a, b) => a.rank - b.rank);
 
@@ -604,10 +661,16 @@
 
       commuteStatusEl.textContent = commuteState.active
         ? `${matches.filter((school) => school.commute_minutes <= commuteMinutes).length} matching schools within ${commuteMinutes} min by ${commuteMode.label}.`
-        : "Click any point on the map to show the best schools within that commute.";
+        : "Map clicks set commute points; marker clicks open school details.";
       priceStatusEl.textContent = priceState.active
         ? `${matches.length} schools match all active filters. Price filter uses ${priceState.metric} <= ${formatCurrency(priceState.maxPrice)}.`
         : "Uses terraced sales within 0.5 miles in the last 2 years.";
+      const faithLabel = filterState.faith === "faith"
+        ? "faith schools"
+        : filterState.faith === "nonfaith"
+          ? "non-faith schools"
+          : "faith and non-faith schools";
+      schoolFilterStatusEl.textContent = `${matches.length} schools match all active filters. Showing ${faithLabel} with FSM eligibility <= ${filterState.fsmMax}%.`;
     }
 
     function activate(rank, options = {}) {
@@ -638,7 +701,8 @@
         color: "#182126",
         opacity: 0.95,
         fillColor: markerColor(school.rank),
-        fillOpacity: 0.92
+        fillOpacity: 0.92,
+        bubblingMouseEvents: false
       });
       marker.bindPopup(() => popupHtml(school));
       marker.on("click", () => activate(school.rank));
@@ -657,8 +721,10 @@
         const flagOverlay = L.marker([school.latitude, school.longitude], {
           icon: flagIcon,
           keyboard: false,
-          interactive: false
-        }).addTo(map);
+          bubblingMouseEvents: false
+        });
+        flagOverlay.on("click", () => activate(school.rank));
+        flagOverlay.addTo(map);
         schoolLayers.get(school.rank).overlays.push(flagOverlay);
       }
 
@@ -672,8 +738,10 @@
         const ratioOverlay = L.marker([school.latitude, school.longitude], {
           icon: ratioIcon,
           keyboard: false,
-          interactive: false
-        }).addTo(map);
+          bubblingMouseEvents: false
+        });
+        ratioOverlay.on("click", () => activate(school.rank));
+        ratioOverlay.addTo(map);
         schoolLayers.get(school.rank).overlays.push(ratioOverlay);
       }
     });
@@ -686,6 +754,9 @@
     priceMaxEl.addEventListener("input", updatePriceFilter);
     priceMetricEl.addEventListener("change", updatePriceFilter);
     clearPriceEl.addEventListener("click", clearPriceFilter);
+    faithFilterEl.addEventListener("change", updateSchoolFilters);
+    fsmMaxEl.addEventListener("input", updateSchoolFilters);
+    clearSchoolFiltersEl.addEventListener("click", clearSchoolFilters);
     map.fitBounds(bounds, { padding: [26, 26] });
   </script>
 </body>
