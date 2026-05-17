@@ -107,7 +107,19 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn("catchment_radius_m", html)
         self.assertIn("Catchment distance", html)
         self.assertIn("catchment-halo", html)
-        self.assertIn("Number(school.catchment_radius_m) > 0", html)
+        self.assertIn("school.catchment_note", html)
+
+    def test_all_applicants_offered_schools_get_halo_and_badge(self):
+        school = self.sample_school()
+        school["school_name"] = "John Burns Primary School"
+        school["catchment_radius_m"] = None
+        school["catchment_note"] = "All applicants offered"
+
+        html = build_map.build_map_html([school])
+
+        self.assertIn("map-flag-all", html)
+        self.assertIn("All applicants offered", html)
+        self.assertIn("school.catchment_note", html)
 
     def test_family_area_filter_defaults_to_50(self):
         html = build_map.build_map_html([self.sample_school()])
