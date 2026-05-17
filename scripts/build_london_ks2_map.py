@@ -1378,7 +1378,7 @@ def build_map_html(rows, ranked_count=None):
     }}
 
     function popupHtml(school) {{
-      const fsmFlag = school.fsm_percent > 25 ? '<span class="flag" title="More than 25% eligible for free school meals">!</span>' : '';
+      const fsmFlag = school.fsm_percent > 35 ? '<span class="flag" title="More than 35% eligible for free school meals">!</span>' : '';
       const ratioFlag = school.anomalous_low_ptr ? '<span class="flag flag-ratio" title="Best 5% pupil-to-teacher ratio in London">T</span>' : '';
       const faithFlag = school.is_faith_school
         ? '<span class="flag flag-faith" title="Faith school">F</span>'
@@ -1486,7 +1486,7 @@ def build_map_html(rows, ranked_count=None):
       rowsEl.innerHTML = "";
       rowByRank.clear();
       rows.forEach((school) => {{
-        const fsmFlag = school.fsm_percent > 25 ? '<span class="flag" title="More than 25% eligible for free school meals">!</span>' : '';
+        const fsmFlag = school.fsm_percent > 35 ? '<span class="flag" title="More than 35% eligible for free school meals">!</span>' : '';
         const ratioFlag = school.anomalous_low_ptr ? '<span class="flag flag-ratio" title="Best 5% pupil-to-teacher ratio in London">T</span>' : '';
         const faithFlag = school.is_faith_school
           ? '<span class="flag flag-faith" title="Faith school">F</span>'
@@ -1683,7 +1683,7 @@ def build_map_html(rows, ranked_count=None):
 
     const bounds = [];
     schools.forEach((school) => {{
-      const fsmFlag = school.fsm_percent > 25 ? '<span class="flag" title="More than 25% eligible for free school meals">!</span>' : '';
+      const fsmFlag = school.fsm_percent > 35 ? '<span class="flag" title="More than 35% eligible for free school meals">!</span>' : '';
       const ratioFlag = school.anomalous_low_ptr ? '<span class="flag flag-ratio" title="Best 5% pupil-to-teacher ratio in London">T</span>' : '';
       const faithFlag = school.is_faith_school
         ? '<span class="flag flag-faith" title="Faith school">F</span>'
@@ -1735,10 +1735,10 @@ def build_map_html(rows, ranked_count=None):
         schoolLayers.get(school.rank).overlays.push(allApplicantsOverlay);
       }}
 
-      if (school.fsm_percent > 25) {{
+      if (school.fsm_percent > 35) {{
         const flagIcon = L.divIcon({{
           className: "",
-          html: '<div class="map-flag" title="More than 25% eligible for free school meals">!</div>',
+          html: '<div class="map-flag" title="More than 35% eligible for free school meals">!</div>',
           iconSize: [18, 18],
           iconAnchor: [-1, 17]
         }});

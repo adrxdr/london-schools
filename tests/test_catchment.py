@@ -129,6 +129,14 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn("familyAreaMin: 50", html)
         self.assertIn("applyFilters();", html)
 
+    def test_fsm_warning_threshold_is_35_percent(self):
+        html = build_map.build_map_html([self.sample_school()])
+
+        self.assertIn("school.fsm_percent > 35", html)
+        self.assertIn("More than 35% eligible for free school meals", html)
+        self.assertNotIn("school.fsm_percent > 25", html)
+        self.assertNotIn("More than 25% eligible for free school meals", html)
+
 
 if __name__ == "__main__":
     unittest.main()
