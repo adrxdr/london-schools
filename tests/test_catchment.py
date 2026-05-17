@@ -149,6 +149,61 @@ class CatchmentTests(unittest.TestCase):
         self.assertEqual(rows[1]["catchment_radius_m"], 394)
         self.assertIn("0.245 miles", rows[1]["catchment_note"])
 
+    def test_ealing_uses_official_2026_allocation_distances(self):
+        rows = [
+            {"school_name": "Southfield Primary School", "borough": "Ealing"},
+            {"school_name": "Ark Priory Primary Academy", "borough": "Ealing"},
+        ]
+
+        build_map.add_catchment_metadata(rows)
+
+        self.assertEqual(rows[0]["catchment_radius_m"], 6342)
+        self.assertEqual(rows[0]["catchment_source_year"], 2026)
+        self.assertIn("Sibling", rows[0]["catchment_note"])
+        self.assertEqual(rows[1]["catchment_radius_m"], 721)
+        self.assertIn("0.448 miles", rows[1]["catchment_note"])
+
+    def test_redbridge_and_havering_latest_allocations_include_all_offered(self):
+        rows = [
+            {"school_name": "Aldersbrook Primary School", "borough": "Redbridge"},
+            {"school_name": "Hacton Primary School", "borough": "Havering"},
+        ]
+
+        build_map.add_catchment_metadata(rows)
+
+        self.assertIsNone(rows[0]["catchment_radius_m"])
+        self.assertEqual(rows[0]["catchment_note"], "All on-time applicants offered")
+        self.assertEqual(rows[0]["catchment_source_year"], 2026)
+        self.assertEqual(rows[1]["catchment_radius_m"], 2348)
+        self.assertIn("2.348 km", rows[1]["catchment_note"])
+
+    def test_newham_keeps_published_na_without_estimating(self):
+        rows = [
+            {"school_name": "Tollgate Primary School", "borough": "Newham"},
+            {"school_name": "Elmhurst Primary School", "borough": "Newham"},
+        ]
+
+        build_map.add_catchment_metadata(rows)
+
+        self.assertIsNone(rows[0]["catchment_radius_m"])
+        self.assertIn("No final-distance cut-off published", rows[0]["catchment_note"])
+        self.assertEqual(rows[1]["catchment_radius_m"], 698)
+        self.assertIn("0.434 miles", rows[1]["catchment_note"])
+
+    def test_sutton_uses_2026_allocation_page_and_linked_junior_note(self):
+        rows = [
+            {"school_name": "Westbourne Primary School", "borough": "Sutton"},
+            {"school_name": "Robin Hood Junior School", "borough": "Sutton"},
+        ]
+
+        build_map.add_catchment_metadata(rows)
+
+        self.assertEqual(rows[0]["catchment_radius_m"], 2416)
+        self.assertEqual(rows[0]["catchment_source_year"], 2026)
+        self.assertIn("furthest distance", rows[0]["catchment_note"])
+        self.assertIsNone(rows[1]["catchment_radius_m"])
+        self.assertIn("Linked infant school", rows[1]["catchment_note"])
+
     def test_build_map_html_draws_catchment_circle_from_school_click(self):
         html = build_map.build_map_html([self.sample_school()])
 

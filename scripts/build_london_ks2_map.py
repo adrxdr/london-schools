@@ -121,6 +121,35 @@ def miles_catchment(miles):
     }
 
 
+def metres_catchment(metres, criterion="published allocation criterion"):
+    return {
+        "radius_m": round(metres),
+        "note": f"Distance of last child offered under {criterion} ({metres:g} metres)",
+    }
+
+
+def km_catchment(km):
+    return {
+        "radius_m": round(km * 1000),
+        "note": f"Distance of last child offered under distance criterion ({km:g} km)",
+    }
+
+
+def criterion_miles_catchment(miles, criterion):
+    return {
+        "radius_m": round(miles * 1609.344),
+        "note": f"Distance of last child offered under {criterion} ({miles:g} miles)",
+    }
+
+
+def no_distance_catchment(note="No final-distance cut-off published in the latest source"):
+    return {"note": note}
+
+
+def all_offered_catchment(note="All on-time applicants offered"):
+    return {"note": note}
+
+
 WANDSWORTH_2026_CATCHMENTS = {
     "all saints ce primary school": {"note": "All applicants offered"},
     "belleville primary school": {
@@ -245,16 +274,258 @@ HACKNEY_2026_CATCHMENTS = {
     "woodberry down community primary school": miles_catchment(2.795),
 }
 
+EALING_CATCHMENT_SOURCE = {
+    "name": "Ealing Council primary allocations by distance and criteria",
+    "year": 2026,
+    "url": "https://www.ealing.gov.uk/download/downloads/id/8668/primary_allocations_by_distance_and_criteria",
+}
+
+EALING_2026_CATCHMENTS = {
+    "ark priory primary academy": criterion_miles_catchment(0.448, "Distance (criterion e)"),
+    "ark priory primary school": criterion_miles_catchment(0.448, "Distance (criterion e)"),
+    "brentside primary academy": criterion_miles_catchment(0.138, "Distance (criterion 7)"),
+    "christ the saviour ce primary school": criterion_miles_catchment(
+        4.93, "Other Christian weekly attendance (criterion 5)"
+    ),
+    "dairy meadow primary school": criterion_miles_catchment(0.505, "Distance (criterion 9)"),
+    "durdans park primary school": criterion_miles_catchment(1.082, "Distance (criterion 9)"),
+    "fielding primary school": criterion_miles_catchment(0.364, "Priority area (criterion 5)"),
+    "holy family catholic primary school": criterion_miles_catchment(
+        0.302, "Other applicants (criterion 12)"
+    ),
+    "little ealing primary school": criterion_miles_catchment(0.363, "Priority area (criterion 5)"),
+    "montpelier primary school": criterion_miles_catchment(0.661, "Priority area (criterion 5)"),
+    "mount carmel catholic primary school": criterion_miles_catchment(
+        0.767, "Practising Catholic living in named parish (criterion 4)"
+    ),
+    "selborne primary school": criterion_miles_catchment(2.47, "Distance (criterion 9)"),
+    "southfield primary school": criterion_miles_catchment(3.941, "Sibling (criterion 6)"),
+    "st gregory's catholic primary school": criterion_miles_catchment(
+        0.739, "Practising Catholic living outside parish (criterion 3)"
+    ),
+    "stanhope primary school": criterion_miles_catchment(7.1, "Distance (criterion 9)"),
+    "tudor primary school": criterion_miles_catchment(0.871, "Distance (criterion 9)"),
+}
+
+HARROW_CATCHMENT_SOURCE = {
+    "name": "Harrow Council primary school place allocations",
+    "year": 2026,
+    "url": "https://www.harrow.gov.uk/downloads/file/33701/primary-school-allocations-2026-27",
+}
+
+HARROW_2026_CATCHMENTS = {
+    "avanti house primary school": criterion_miles_catchment(1.313, "distance criterion"),
+    "cannon lane primary school": criterion_miles_catchment(0.851, "distance criterion"),
+    "grimsdyke school": criterion_miles_catchment(1.498, "distance criterion"),
+    "krishna avanti primary school": criterion_miles_catchment(0.683, "distance criterion"),
+    "krishna avanti school": criterion_miles_catchment(0.683, "distance criterion"),
+    "newton farm nursery infant and junior school": criterion_miles_catchment(
+        0.359, "distance criterion"
+    ),
+    "pinner wood school": criterion_miles_catchment(0.778, "distance criterion"),
+    "priestmead primary school and nursery": criterion_miles_catchment(0.823, "distance criterion"),
+    "priestmead primary school": criterion_miles_catchment(0.823, "distance criterion"),
+    "stanburn primary school": criterion_miles_catchment(1.253, "distance criterion"),
+    "vaughan primary school": criterion_miles_catchment(0.396, "distance criterion"),
+    "west lodge primary school": criterion_miles_catchment(0.663, "distance criterion"),
+    "st anselm's catholic primary school": no_distance_catchment(
+        "Breakdown not published by Harrow; source says contact the school directly"
+    ),
+    "st bernadette's catholic primary school": no_distance_catchment(
+        "Breakdown not published by Harrow; source says contact the school directly"
+    ),
+    "st john fisher catholic primary school": no_distance_catchment(
+        "Breakdown not published by Harrow; source says contact the school directly"
+    ),
+    "st joseph's catholic primary school": no_distance_catchment(
+        "Breakdown not published by Harrow; source says contact the school directly"
+    ),
+    "whitchurch primary school and nursery": no_distance_catchment(
+        "No final-distance cut-off published in the latest Harrow source"
+    ),
+}
+
+REDBRIDGE_CATCHMENT_SOURCE = {
+    "name": "Redbridge Council primary offer day last allocated distances",
+    "year": 2026,
+    "url": "https://www.redbridge.gov.uk/media/ldbowne5/primary-offer-day-16-april-2026-last-allocated.pdf",
+}
+
+REDBRIDGE_2026_CATCHMENTS = {
+    "al noor voluntary aided muslim primary school": criterion_miles_catchment(
+        0.361, "Non-Muslim distance"
+    ),
+    "al noor primary school": criterion_miles_catchment(0.361, "Non-Muslim distance"),
+    "aldborough primary school": all_offered_catchment(),
+    "aldersbrook primary school": all_offered_catchment(),
+    "avanti court primary school": criterion_miles_catchment(
+        2.929, "Band 3 Hindu faith distance"
+    ),
+    "christchurch primary school": all_offered_catchment(),
+    "churchfields junior school": criterion_miles_catchment(
+        0.471, "junior transfer distance"
+    ),
+    "cleveland road primary school": criterion_miles_catchment(0.617, "distance"),
+    "fullwood primary school": criterion_miles_catchment(0.904, "distance"),
+    "gearies primary school": criterion_miles_catchment(0.847, "distance"),
+    "gordon primary school": all_offered_catchment(),
+    "grove primary school": criterion_miles_catchment(1.51, "distance"),
+    "highlands primary school": criterion_miles_catchment(0.669, "distance"),
+    "nightingale primary school": criterion_miles_catchment(1.821, "distance"),
+    "our lady of lourdes rc primary school": criterion_miles_catchment(
+        0.188, "Any other applicant"
+    ),
+    "parkhill junior school": all_offered_catchment(),
+    "ss peter and paul's catholic primary school": all_offered_catchment(),
+    "st antony's catholic primary school": all_offered_catchment(),
+    "st bede's catholic primary school": all_offered_catchment(),
+    "wanstead church school": criterion_miles_catchment(1.286, "distance to school"),
+    "wells primary school": criterion_miles_catchment(0.714, "distance"),
+}
+
+HAVERING_CATCHMENT_SOURCE = {
+    "name": "Havering Council infant and primary school statistics",
+    "year": 2026,
+    "url": "https://www.havering.gov.uk/downloads/file/7395/infant-and-primary-school-statistics-2026",
+}
+
+HAVERING_2026_CATCHMENTS = {
+    "ardleigh green infants": km_catchment(0.746),
+    "ardleigh green junior school": km_catchment(0.746),
+    "concordia academy": km_catchment(1.115),
+    "hacton primary school": km_catchment(2.348),
+    "nelmes primary school": km_catchment(1.081),
+    "scotts primary school": km_catchment(0.989),
+    "suttons primary school": no_distance_catchment(),
+    "upminster infants": km_catchment(1.911),
+    "upminster junior school": km_catchment(1.911),
+}
+
+NEWHAM_CATCHMENT_SOURCE = {
+    "name": "Newham Council Starting School in Newham",
+    "year": 2026,
+    "url": "https://www.newham.gov.uk/downloads/file/9671/starting-school-in-newham-2026-",
+}
+
+NEWHAM_2026_CATCHMENTS = {
+    "calverton primary school": no_distance_catchment(),
+    "central park primary school": no_distance_catchment(),
+    "cleves primary school": criterion_miles_catchment(0.33, "All Other"),
+    "curwen primary school": criterion_miles_catchment(0.896, "All Other"),
+    "earlham primary school": criterion_miles_catchment(0.395, "All Other"),
+    "elmhurst primary school": criterion_miles_catchment(0.434, "All Other"),
+    "grange primary school": no_distance_catchment(),
+    "hallsville primary school": criterion_miles_catchment(0.474, "All Other"),
+    "keir hardie primary school": no_distance_catchment(),
+    "new city primary school": no_distance_catchment(),
+    "ranelagh primary school": no_distance_catchment(),
+    "ravenscroft primary school": no_distance_catchment(),
+    "roman road primary school": no_distance_catchment(),
+    "rosetta primary school": no_distance_catchment(),
+    "salisbury primary school": no_distance_catchment(),
+    "scott wilkie primary school": no_distance_catchment(),
+    "shaftesbury primary school": no_distance_catchment(),
+    "southern road primary school": no_distance_catchment(),
+    "st stephen's primary school": criterion_miles_catchment(0.369, "All Other"),
+    "tollgate primary school": no_distance_catchment(),
+    "vicarage primary school": no_distance_catchment(),
+}
+
+BRENT_CATCHMENT_SOURCE = {
+    "name": "Brent Council how places were offered at schools",
+    "year": 2026,
+    "url": "https://www.brent.gov.uk/education-schools-and-learning/school-admissions/how-school-places-were-offered",
+}
+
+BRENT_2026_CATCHMENTS = {
+    "ark franklin primary academy": metres_catchment(671.53, "Distance"),
+    "east lane primary school": metres_catchment(1294.11, "Distance"),
+    "mount stewart junior school": metres_catchment(4415.19, "Any Other Applicant"),
+    "our lady of grace catholic junior school": metres_catchment(7232.49, "Other Applicants"),
+    "princess frederica ce primary school": metres_catchment(
+        814.03, "Any Other Child who live in parish"
+    ),
+    "sinai jewish primary school": metres_catchment(
+        8987.12, "Other children with completed and valid CRP"
+    ),
+    "st joseph's catholic junior school": metres_catchment(
+        1553.38, "Baptised Catholic with certificate of Catholic practice, in parish"
+    ),
+    "st joseph's roman catholic primary school": metres_catchment(
+        1678.52, "Other Christian children"
+    ),
+    "sudbury primary school": metres_catchment(3284.16, "Distance"),
+}
+
+TOWER_HAMLETS_CATCHMENT_SOURCE = {
+    "name": "Tower Hamlets Council reception places offered",
+    "year": 2026,
+    "url": "https://www.towerhamlets.gov.uk/lgnl/education_and_learning/schools/school_admissions/primary_school_admissions.aspx",
+}
+
+TOWER_HAMLETS_2026_CATCHMENTS = {
+    "bigland green primary school": metres_catchment(537, "tie-break cut off"),
+    "mayflower primary school": metres_catchment(515, "tie-break cut off"),
+}
+
+SUTTON_CATCHMENT_SOURCE = {
+    "name": "Sutton Council primary school allocation information",
+    "year": 2026,
+    "url": "https://www.sutton.gov.uk/w/primary-school-allocation-information",
+}
+
+SUTTON_2026_CATCHMENTS = {
+    "all saints carshalton ce primary school": no_distance_catchment(
+        "Voluntary-aided school; Sutton source says contact the school direct"
+    ),
+    "all saints carshalton church of england primary school": no_distance_catchment(
+        "Voluntary-aided school; Sutton source says contact the school direct"
+    ),
+    "barrow hedges primary school": metres_catchment(1171.54, "furthest distance"),
+    "brookfield primary academy": all_offered_catchment(),
+    "cheam common infants": metres_catchment(1006.55, "furthest distance"),
+    "cheam common junior academy": metres_catchment(1006.55, "linked infant allocation"),
+    "cheam fields primary academy": metres_catchment(1214.74, "furthest distance"),
+    "cheam park farm primary academy": metres_catchment(3317.13, "furthest distance"),
+    "manor park primary academy": metres_catchment(464.02, "furthest distance"),
+    "robin hood infants": all_offered_catchment(),
+    "robin hood junior school": all_offered_catchment("Linked infant school: all applicants offered"),
+    "st cecilia's catholic primary school": no_distance_catchment(
+        "Voluntary-aided school; Sutton source says contact the school direct"
+    ),
+    "st elphege's rc infants": all_offered_catchment(),
+    "st elphege's rc junior school": all_offered_catchment(
+        "Linked infant school: all applicants offered"
+    ),
+    "westbourne primary school": metres_catchment(2416.15, "furthest distance"),
+}
+
 CATCHMENT_SOURCES_BY_BOROUGH = {
     "Wandsworth": WANDSWORTH_CATCHMENT_SOURCE,
     "Haringey": HARINGEY_CATCHMENT_SOURCE,
     "Hackney": HACKNEY_CATCHMENT_SOURCE,
+    "Ealing": EALING_CATCHMENT_SOURCE,
+    "Harrow": HARROW_CATCHMENT_SOURCE,
+    "Redbridge": REDBRIDGE_CATCHMENT_SOURCE,
+    "Havering": HAVERING_CATCHMENT_SOURCE,
+    "Newham": NEWHAM_CATCHMENT_SOURCE,
+    "Brent": BRENT_CATCHMENT_SOURCE,
+    "Tower Hamlets": TOWER_HAMLETS_CATCHMENT_SOURCE,
+    "Sutton": SUTTON_CATCHMENT_SOURCE,
 }
 
 CATCHMENTS_BY_BOROUGH = {
     "Wandsworth": WANDSWORTH_2026_CATCHMENTS,
     "Haringey": HARINGEY_2025_CATCHMENTS,
     "Hackney": HACKNEY_2026_CATCHMENTS,
+    "Ealing": EALING_2026_CATCHMENTS,
+    "Harrow": HARROW_2026_CATCHMENTS,
+    "Redbridge": REDBRIDGE_2026_CATCHMENTS,
+    "Havering": HAVERING_2026_CATCHMENTS,
+    "Newham": NEWHAM_2026_CATCHMENTS,
+    "Brent": BRENT_2026_CATCHMENTS,
+    "Tower Hamlets": TOWER_HAMLETS_2026_CATCHMENTS,
+    "Sutton": SUTTON_2026_CATCHMENTS,
 }
 
 LINKED_CATCHMENT_SCHOOL_ALIASES = {
@@ -1346,7 +1617,7 @@ def build_map_html(rows, ranked_count=None):
           <li><strong>House-price filter:</strong> median/average sold price for terraced houses within 0.5 miles, using HM Land Registry Price Paid Data since 16 May 2024. Popups show sale counts because small samples can be noisy.</li>
           <li><strong>Family area rating:</strong> 0-100 proxy, split 50/50 between recent local safety and lower deprivation. Safety uses weighted data.police.uk street-level crimes within 1 mile; deprivation uses the English Index of Multiple Deprivation 2019 for the school postcode LSOA.</li>
           <li><strong>Catchment-point search:</strong> clicking the map highlights schools whose latest source-backed numeric catchment radius contains that point. Schools marked ALL are still source-backed, but have no cut-off radius to test against.</li>
-          <li><strong>Catchment circles:</strong> shown only where the latest source-backed allocation distance is available. Sources now include Wandsworth 2026, Hackney 2026, and Haringey 2025. Source-backed schools have an amber halo before you click. A green ALL badge means all applicants were offered, so no cut-off radius was needed.</li>
+          <li><strong>Catchment circles:</strong> shown only where the latest official allocation source gives a distance or explicit no-distance outcome. Sources now include Brent 2026, Ealing 2026, Hackney 2026, Haringey 2025, Harrow 2026, Havering 2026, Newham 2026, Redbridge 2026, Sutton 2026, Tower Hamlets 2026, and Wandsworth 2026. Source-backed schools have an amber halo before you click. A green ALL badge means all applicants were offered, so no cut-off radius was needed. No estimated catchment distances are used.</li>
         </ul>
       </div>
       <div class="filter-tool">
