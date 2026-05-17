@@ -550,7 +550,13 @@
         opacity: dimmed ? 0.28 : 0.95,
         fillOpacity: dimmed ? 0.18 : 0.92
       });
-      layers.overlays.forEach((overlay) => overlay.setOpacity(dimmed ? 0.22 : 1));
+      layers.overlays.forEach((overlay) => {
+        if (typeof overlay.setOpacity === "function") {
+          overlay.setOpacity(dimmed ? 0.22 : 1);
+        } else if (typeof overlay.setStyle === "function") {
+          overlay.setStyle({ opacity: dimmed ? 0.22 : 0.95 });
+        }
+      });
     }
 
     function stopMapClick(event) {

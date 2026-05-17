@@ -157,6 +157,9 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn("Catchment distance", html)
         self.assertIn("catchment-halo", html)
         self.assertIn("school.catchment_note", html)
+        self.assertIn('typeof overlay.setStyle === "function"', html)
+        self.assertIn("radius: 13", html)
+        self.assertIn('color: "#b8432f"', html)
 
     def test_all_applicants_offered_schools_get_halo_and_badge(self):
         school = self.sample_school()
