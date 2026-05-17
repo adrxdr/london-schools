@@ -101,6 +101,26 @@ WANDSWORTH_CATCHMENT_SOURCE = {
     "url": "https://www.wandsworth.gov.uk/media/4q2f3jqt/how_places_were_allocated_for_primary_schools_2026.pdf",
 }
 
+HARINGEY_CATCHMENT_SOURCE = {
+    "name": "Haringey Council primary cutoff distances",
+    "year": 2025,
+    "url": "https://haringey.gov.uk/schools-learning/schools/school-admissions/how-school-place-offers-were-made/cutoff-distance-school-last-child-offered-place/primary-schools-distance-school-last-child-offered-place-national-offer-day",
+}
+
+HACKNEY_CATCHMENT_SOURCE = {
+    "name": "Hackney Education reception applications and offers",
+    "year": 2026,
+    "url": "https://education.hackney.gov.uk/sites/default/files/document/Applications%20and%20Offers%20at%20Hackney%20Primary%20Schools%202018-26.pdf",
+}
+
+
+def miles_catchment(miles):
+    return {
+        "radius_m": round(miles * 1609.344),
+        "note": f"Distance of last child offered under distance criterion ({miles:g} miles)",
+    }
+
+
 WANDSWORTH_2026_CATCHMENTS = {
     "all saints ce primary school": {"note": "All applicants offered"},
     "belleville primary school": {
@@ -148,10 +168,109 @@ WANDSWORTH_2026_CATCHMENTS = {
     "trinity st mary's primary school": {"note": "All applicants offered"},
 }
 
+HARINGEY_2025_CATCHMENTS = {
+    "alexandra primary school": {"note": "All applicants offered"},
+    "belmont infant school": miles_catchment(0.1808),
+    "bounds green infant school": miles_catchment(0.5317),
+    "bruce grove primary school": {"note": "All applicants offered"},
+    "campsbourne infant school": miles_catchment(0.7065),
+    "chestnuts primary school": miles_catchment(0.2729),
+    "coldfall primary school": miles_catchment(0.8358),
+    "coleridge primary school": miles_catchment(0.4913),
+    "crowland primary school": {"note": "All applicants offered"},
+    "devonshire hill primary school": {"note": "All applicants offered"},
+    "earlham primary school": miles_catchment(0.7918),
+    "earlsmead primary school": {"note": "All applicants offered"},
+    "ferry lane primary school": {"note": "All applicants offered"},
+    "harris academy tottenham": miles_catchment(0.3668),
+    "harris primary academy coleraine park": {"note": "All applicants offered"},
+    "harris primary academy philip lane": miles_catchment(0.3807),
+    "highgate primary school": miles_catchment(1.0265),
+    "lancasterian primary school": miles_catchment(0.7961),
+    "lea valley primary school": {"note": "All applicants offered"},
+    "lordship lane primary school": {"note": "All applicants offered"},
+    "mulberry primary school": miles_catchment(0.522),
+    "muswell hill primary school": miles_catchment(0.5338),
+    "noel park primary school": miles_catchment(0.6743),
+    "north harringay primary school": miles_catchment(0.287),
+    "rhodes avenue primary school": miles_catchment(0.3808),
+    "risley avenue primary school": {"note": "All applicants offered"},
+    "rokesly infant school": miles_catchment(0.4557),
+    "south harringay infant school": miles_catchment(0.1884),
+    "st aidan's voluntary controlled primary school": miles_catchment(0.2178),
+    "stroud green primary school": miles_catchment(0.3593),
+    "tetherdown primary school": {"note": "All applicants offered"},
+    "the willow primary school": miles_catchment(0.3234),
+    "trinity primary academy": miles_catchment(0.4733),
+    "welbourne primary school": {"note": "All applicants offered"},
+    "west green primary school": miles_catchment(0.2863),
+    "weston park primary school": miles_catchment(0.2345),
+}
+
+HACKNEY_2026_CATCHMENTS = {
+    "benthal primary school": miles_catchment(0.833),
+    "berger primary school": miles_catchment(9.719),
+    "betty layward primary school": miles_catchment(0.245),
+    "daubeney primary school": miles_catchment(5.829),
+    "gainsborough primary school": miles_catchment(3.31),
+    "gayhurst community school": miles_catchment(0.344),
+    "grasmere primary school": miles_catchment(0.197),
+    "grazebrook primary school": miles_catchment(0.51),
+    "harrington hill primary school": miles_catchment(0.321),
+    "holmleigh primary school": miles_catchment(7.416),
+    "hoxton garden primary school": {
+        "radius_m": 350,
+        "note": "Source lists max distance as 350.333 under the miles column; treated as metres due implausible mile value",
+    },
+    "jubilee primary school": miles_catchment(1.294),
+    "kingsmead primary school": miles_catchment(0.568),
+    "lauriston primary school": miles_catchment(0.463),
+    "london fields primary school": miles_catchment(1.179),
+    "mandeville primary school": miles_catchment(1.668),
+    "millfields community school": miles_catchment(1.65),
+    "morningside primary school": miles_catchment(0.835),
+    "nightingale primary school": miles_catchment(0.699),
+    "orchard primary school": miles_catchment(2.443),
+    "parkwood primary school": miles_catchment(1.5),
+    "princess may primary school": miles_catchment(5.127),
+    "queensbridge primary school": miles_catchment(3.517),
+    "rushmore primary school": miles_catchment(0.447),
+    "sebright school": miles_catchment(0.434),
+    "shacklewell primary school": miles_catchment(0.277),
+    "shoreditch park primary school": miles_catchment(0.419),
+    "southwold primary school": miles_catchment(0.796),
+    "springfield community primary school": miles_catchment(0.979),
+    "thomas fairchild community school": miles_catchment(1.993),
+    "william patten primary school": miles_catchment(0.466),
+    "woodberry down community primary school": miles_catchment(2.795),
+}
+
+CATCHMENT_SOURCES_BY_BOROUGH = {
+    "Wandsworth": WANDSWORTH_CATCHMENT_SOURCE,
+    "Haringey": HARINGEY_CATCHMENT_SOURCE,
+    "Hackney": HACKNEY_CATCHMENT_SOURCE,
+}
+
+CATCHMENTS_BY_BOROUGH = {
+    "Wandsworth": WANDSWORTH_2026_CATCHMENTS,
+    "Haringey": HARINGEY_2025_CATCHMENTS,
+    "Hackney": HACKNEY_2026_CATCHMENTS,
+}
+
 LINKED_CATCHMENT_SCHOOL_ALIASES = {
     "honeywell junior school": {
         "catchment_key": "honeywell infant school",
         "source_school_name": "Honeywell Infant School",
+        "reason": "Reception admissions are published for the linked infant school",
+    },
+    "rokesly junior school": {
+        "catchment_key": "rokesly infant school",
+        "source_school_name": "Rokesly Infant School",
+        "reason": "Reception admissions are published for the linked infant school",
+    },
+    "south harringay junior school": {
+        "catchment_key": "south harringay infant school",
+        "source_school_name": "South Harringay Infant School",
         "reason": "Reception admissions are published for the linked infant school",
     },
 }
@@ -181,6 +300,9 @@ def catchment_lookup_key(row):
         "st michael's ce primary school": "st michael's ce primary school",
         "roehampton church forest primary school": "roehampton church forest school",
         "rutherford house school": "rutherford house primary school",
+        "lift trinity": "trinity primary academy",
+        "lift noel park": "noel park primary school",
+        "hoxton garden primary": "hoxton garden primary school",
     }
     if name in LINKED_CATCHMENT_SCHOOL_ALIASES:
         return LINKED_CATCHMENT_SCHOOL_ALIASES[name]["catchment_key"]
@@ -203,17 +325,20 @@ def add_catchment_metadata(rows):
         row["catchment_source_url"] = None
         row["catchment_note"] = None
 
-        if row.get("borough") != "Wandsworth":
+        borough = row.get("borough")
+        catchments = CATCHMENTS_BY_BOROUGH.get(borough)
+        source = CATCHMENT_SOURCES_BY_BOROUGH.get(borough)
+        if not catchments or not source:
             continue
 
-        catchment = WANDSWORTH_2026_CATCHMENTS.get(catchment_lookup_key(row))
+        catchment = catchments.get(catchment_lookup_key(row))
         if not catchment:
             continue
 
         row["catchment_radius_m"] = catchment.get("radius_m")
-        row["catchment_source_year"] = WANDSWORTH_CATCHMENT_SOURCE["year"]
-        row["catchment_source_name"] = WANDSWORTH_CATCHMENT_SOURCE["name"]
-        row["catchment_source_url"] = WANDSWORTH_CATCHMENT_SOURCE["url"]
+        row["catchment_source_year"] = source["year"]
+        row["catchment_source_name"] = source["name"]
+        row["catchment_source_url"] = source["url"]
         note = catchment["note"]
         alias_note = catchment_alias_note(row)
         if alias_note:
@@ -1221,7 +1346,7 @@ def build_map_html(rows, ranked_count=None):
           <li><strong>House-price filter:</strong> median/average sold price for terraced houses within 0.5 miles, using HM Land Registry Price Paid Data since 16 May 2024. Popups show sale counts because small samples can be noisy.</li>
           <li><strong>Family area rating:</strong> 0-100 proxy, split 50/50 between recent local safety and lower deprivation. Safety uses weighted data.police.uk street-level crimes within 1 mile; deprivation uses the English Index of Multiple Deprivation 2019 for the school postcode LSOA.</li>
           <li><strong>Commute filter:</strong> rough distance-based estimates only, intended for shortlisting before checking live routes.</li>
-          <li><strong>Catchment circles:</strong> shown only where the latest source-backed allocation distance is available. Wandsworth uses its 2026 reception allocation PDF; source-backed schools have an amber halo before you click. A green ALL badge means all applicants were offered, so no cut-off radius was needed.</li>
+          <li><strong>Catchment circles:</strong> shown only where the latest source-backed allocation distance is available. Sources now include Wandsworth 2026, Hackney 2026, and Haringey 2025. Source-backed schools have an amber halo before you click. A green ALL badge means all applicants were offered, so no cut-off radius was needed.</li>
         </ul>
       </div>
       <div class="commute-tool">

@@ -100,6 +100,55 @@ class CatchmentTests(unittest.TestCase):
             "Furthest distance offered under proximity criterion",
         )
 
+    def test_haringey_uses_latest_2025_distance_table(self):
+        rows = [
+            {
+                "school_name": "Rhodes Avenue Primary School",
+                "borough": "Haringey",
+            },
+            {
+                "school_name": "Tetherdown Primary School",
+                "borough": "Haringey",
+            },
+            {
+                "school_name": "South Harringay Junior School",
+                "borough": "Haringey",
+            },
+        ]
+
+        build_map.add_catchment_metadata(rows)
+
+        self.assertEqual(rows[0]["catchment_radius_m"], 613)
+        self.assertEqual(rows[0]["catchment_source_year"], 2025)
+        self.assertIn("0.3808 miles", rows[0]["catchment_note"])
+
+        self.assertIsNone(rows[1]["catchment_radius_m"])
+        self.assertEqual(rows[1]["catchment_note"], "All applicants offered")
+
+        self.assertEqual(rows[2]["catchment_radius_m"], 303)
+        self.assertIn("South Harringay Infant School", rows[2]["catchment_note"])
+
+    def test_hackney_uses_2026_community_school_distances(self):
+        rows = [
+            {
+                "school_name": "Southwold Primary School",
+                "borough": "Hackney",
+            },
+            {
+                "school_name": "Betty Layward Primary School",
+                "borough": "Hackney",
+            },
+        ]
+
+        build_map.add_catchment_metadata(rows)
+
+        self.assertEqual(rows[0]["catchment_radius_m"], 1281)
+        self.assertEqual(rows[0]["catchment_source_year"], 2026)
+        self.assertIn("0.796 miles", rows[0]["catchment_note"])
+
+        self.assertEqual(rows[1]["catchment_radius_m"], 394)
+        self.assertIn("0.245 miles", rows[1]["catchment_note"])
+
     def test_build_map_html_draws_catchment_circle_from_school_click(self):
         html = build_map.build_map_html([self.sample_school()])
 
