@@ -1092,7 +1092,7 @@ def build_map_html(rows, ranked_count=None):
     .method li {{
       margin: 5px 0;
     }}
-    .commute-tool {{
+    .filter-tool {{
       display: grid;
       gap: 10px;
       margin: 0 0 18px;
@@ -1101,11 +1101,11 @@ def build_map_html(rows, ranked_count=None):
       border-radius: 14px;
       background: rgba(255,255,255,0.74);
     }}
-    .commute-title {{
+    .filter-title {{
       font-weight: 700;
       font-size: 0.98rem;
     }}
-    .commute-grid {{
+    .filter-grid {{
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
@@ -1147,12 +1147,12 @@ def build_map_html(rows, ranked_count=None):
       background: #fffdf8;
       color: var(--ink);
     }}
-    .commute-status {{
+    .filter-status {{
       color: var(--muted);
       font-size: 0.86rem;
       line-height: 1.35;
     }}
-    .commute-note {{
+    .filter-note {{
       color: var(--muted);
       font-size: 0.78rem;
       line-height: 1.35;
@@ -1200,7 +1200,7 @@ def build_map_html(rows, ranked_count=None):
       color: var(--muted);
       font-size: 0.82rem;
     }}
-    .commute-time {{
+    .catchment-match {{
       color: var(--accent);
       font-size: 0.82rem;
       font-weight: 650;
@@ -1329,7 +1329,7 @@ def build_map_html(rows, ranked_count=None):
     <aside class="sidebar">
       <h1>Top 500 London Primary-Age Schools</h1>
       <p class="subhead">2025 KS2 results, ranked from official DfE school-level attainment data and mapped by school postcode.</p>
-      <p class="subhead"><strong>Tip:</strong> click a school marker for details; click empty map space to set a commute starting point.</p>
+      <p class="subhead"><strong>Tip:</strong> click a school marker for details; click empty map space to find schools whose source-backed catchment contains that point.</p>
       <div class="meta">
         <div class="card"><strong>{len(rows)}</strong><span>Schools on the map</span></div>
         <div class="card"><strong>{ranked_count_label}</strong><span>London schools ranked</span></div>
@@ -1345,32 +1345,17 @@ def build_map_html(rows, ranked_count=None):
           <li><strong>Location:</strong> school postcodes are geocoded, so markers are approximate postcode-level locations.</li>
           <li><strong>House-price filter:</strong> median/average sold price for terraced houses within 0.5 miles, using HM Land Registry Price Paid Data since 16 May 2024. Popups show sale counts because small samples can be noisy.</li>
           <li><strong>Family area rating:</strong> 0-100 proxy, split 50/50 between recent local safety and lower deprivation. Safety uses weighted data.police.uk street-level crimes within 1 mile; deprivation uses the English Index of Multiple Deprivation 2019 for the school postcode LSOA.</li>
-          <li><strong>Commute filter:</strong> rough distance-based estimates only, intended for shortlisting before checking live routes.</li>
+          <li><strong>Catchment-point search:</strong> clicking the map highlights schools whose latest source-backed numeric catchment radius contains that point. Schools marked ALL are still source-backed, but have no cut-off radius to test against.</li>
           <li><strong>Catchment circles:</strong> shown only where the latest source-backed allocation distance is available. Sources now include Wandsworth 2026, Hackney 2026, and Haringey 2025. Source-backed schools have a blue halo before you click. A green ALL badge means all applicants were offered, so no cut-off radius was needed.</li>
         </ul>
       </div>
-      <div class="commute-tool">
-        <div class="commute-title">Find schools near a commute point</div>
-        <div class="commute-grid">
-          <label>
-            Minutes
-            <input id="commuteMinutes" type="number" min="5" max="90" step="5" value="30">
-          </label>
-          <label>
-            Mode
-            <select id="commuteMode">
-              <option value="transit">Transit estimate</option>
-              <option value="cycle">Cycle</option>
-              <option value="walk">Walk</option>
-              <option value="drive">Drive</option>
-            </select>
-          </label>
-        </div>
-        <button id="clearCommute" class="secondary" type="button">Show all schools</button>
-        <div id="commuteStatus" class="commute-status">Map clicks set commute points; marker clicks open school details.</div>
-        <div class="commute-note">Times are approximate map-distance estimates, useful for shortlisting before checking live TfL or route details.</div>
-        <div class="commute-title">Filter by nearby terraced-house sold prices</div>
-        <div class="commute-grid">
+      <div class="filter-tool">
+        <div class="filter-title">Find schools covering a map point</div>
+        <button id="clearCatchmentSearch" class="secondary" type="button">Clear catchment point</button>
+        <div id="catchmentSearchStatus" class="filter-status">Map clicks find source-backed catchment circles containing that point.</div>
+        <div class="filter-note">Only schools with numeric catchment radii can be matched. ALL/no-radius entries remain visible as source-backed catchments, but cannot contain a point mathematically.</div>
+        <div class="filter-title">Filter by nearby terraced-house sold prices</div>
+        <div class="filter-grid">
           <label>
             Max price
             <input id="priceMax" type="number" min="0" step="25000" placeholder="e.g. 900000">
@@ -1384,18 +1369,18 @@ def build_map_html(rows, ranked_count=None):
           </label>
         </div>
         <button id="clearPrice" class="secondary" type="button">Clear price filter</button>
-        <div id="priceStatus" class="commute-status">Uses terraced sales within 0.5 miles in the last 2 years.</div>
-        <div class="commute-note">Source: HM Land Registry Price Paid Data. Small samples can be lumpy, so each popup includes the sale count.</div>
-        <div class="commute-title">Filter by family area rating</div>
+        <div id="priceStatus" class="filter-status">Uses terraced sales within 0.5 miles in the last 2 years.</div>
+        <div class="filter-note">Source: HM Land Registry Price Paid Data. Small samples can be lumpy, so each popup includes the sale count.</div>
+        <div class="filter-title">Filter by family area rating</div>
         <label>
           <span class="range-label"><span>Minimum family area rating</span><strong id="familyAreaMinValue">50</strong></span>
           <input id="familyAreaMin" type="range" min="0" max="100" step="1" value="50">
         </label>
         <button id="clearFamilyArea" class="secondary" type="button">Clear area filter</button>
-        <div id="familyAreaStatus" class="commute-status">Family area rating blends safety and lower deprivation, weighted equally.</div>
-        <div class="commute-note">Safety uses recent data.police.uk street-level crimes within 1 mile. Deprivation uses the official English Index of Multiple Deprivation 2019 for the school postcode LSOA.</div>
-        <div class="commute-title">Filter by school type and free school meals (FSM)</div>
-        <div class="commute-grid">
+        <div id="familyAreaStatus" class="filter-status">Family area rating blends safety and lower deprivation, weighted equally.</div>
+        <div class="filter-note">Safety uses recent data.police.uk street-level crimes within 1 mile. Deprivation uses the official English Index of Multiple Deprivation 2019 for the school postcode LSOA.</div>
+        <div class="filter-title">Filter by school type and free school meals (FSM)</div>
+        <div class="filter-grid">
           <label>
             Faith status
             <select id="faithFilter">
@@ -1410,7 +1395,7 @@ def build_map_html(rows, ranked_count=None):
           </label>
         </div>
         <button id="clearSchoolFilters" class="secondary" type="button">Clear school filters</button>
-        <div id="schoolFilterStatus" class="commute-status">Showing faith and non-faith schools at any free-school-meals level.</div>
+        <div id="schoolFilterStatus" class="filter-status">Showing faith and non-faith schools at any free-school-meals level.</div>
       </div>
       <div class="table-wrap">
         <table>
@@ -1438,10 +1423,8 @@ def build_map_html(rows, ranked_count=None):
     }}).addTo(map);
 
     const rowsEl = document.getElementById("rankings");
-    const commuteMinutesEl = document.getElementById("commuteMinutes");
-    const commuteModeEl = document.getElementById("commuteMode");
-    const clearCommuteEl = document.getElementById("clearCommute");
-    const commuteStatusEl = document.getElementById("commuteStatus");
+    const clearCatchmentSearchEl = document.getElementById("clearCatchmentSearch");
+    const catchmentSearchStatusEl = document.getElementById("catchmentSearchStatus");
     const priceMaxEl = document.getElementById("priceMax");
     const priceMetricEl = document.getElementById("priceMetric");
     const clearPriceEl = document.getElementById("clearPrice");
@@ -1461,17 +1444,10 @@ def build_map_html(rows, ranked_count=None):
     const catchmentState = {{
       circle: null
     }};
-    const commuteState = {{
+    const catchmentSearchState = {{
       active: false,
       origin: null,
-      originMarker: null,
-      rangeCircle: null
-    }};
-    const commuteModes = {{
-      transit: {{ label: "transit estimate", speedKmh: 18, routeFactor: 1.35, fixedMinutes: 8 }},
-      cycle: {{ label: "cycle", speedKmh: 14, routeFactor: 1.25, fixedMinutes: 3 }},
-      walk: {{ label: "walk", speedKmh: 4.8, routeFactor: 1.2, fixedMinutes: 1 }},
-      drive: {{ label: "drive", speedKmh: 22, routeFactor: 1.35, fixedMinutes: 6 }}
+      originMarker: null
     }};
     const priceState = {{
       active: false,
@@ -1514,8 +1490,8 @@ def build_map_html(rows, ranked_count=None):
       const faithTypeLabel = school.is_faith_school
         ? `Faith (${{school.religious_denomination}})`
         : 'Non-faith';
-      const commuteLine = commuteState.active && Number.isFinite(school.commute_minutes)
-        ? `<p>Estimated commute: <strong>${{school.commute_minutes.toFixed(0)}} min</strong></p>`
+      const catchmentMatchLine = catchmentSearchState.active && school.contains_catchment_point
+        ? '<p><strong>This school catchment contains the selected map point.</strong></p>'
         : '';
       const terraceCount = school.terrace_sales_count_2y_0_5mi || 0;
       const terraceLine = terraceCount
@@ -1535,7 +1511,7 @@ def build_map_html(rows, ranked_count=None):
           <h3>#${{school.rank}} ${{school.school_name}} ${{faithFlag}} ${{fsmFlag}} ${{ratioFlag}}</h3>
           <p><strong>London rank:</strong> #${{school.rank}} · <strong>${{school.borough}} rank:</strong> #${{school.borough_rank}}</p>
           ${{nonFaithRankLine}}
-          ${{commuteLine}}
+          ${{catchmentMatchLine}}
           <p>School type: <strong>${{faithTypeLabel}}</strong></p>
           <p><strong>${{school.borough}}</strong> · ${{school.age_range}} · Eligible pupils: ${{school.eligible_pupils}}</p>
           <p>Free school meals eligible: <strong>${{school.fsm_percent}}%</strong></p>
@@ -1563,12 +1539,6 @@ def build_map_html(rows, ranked_count=None):
       return 2 * earthKm * Math.asin(Math.sqrt(h));
     }}
 
-    function estimateMinutes(origin, school) {{
-      const mode = commuteModes[commuteModeEl.value] || commuteModes.transit;
-      const km = distanceKm(origin, {{ lat: school.latitude, lng: school.longitude }}) * mode.routeFactor;
-      return (km / mode.speedKmh * 60) + mode.fixedMinutes;
-    }}
-
     function setLayerDimmed(school, dimmed) {{
       const layers = schoolLayers.get(school.rank);
       if (!layers) return;
@@ -1577,6 +1547,10 @@ def build_map_html(rows, ranked_count=None):
         fillOpacity: dimmed ? 0.18 : 0.92
       }});
       layers.overlays.forEach((overlay) => overlay.setOpacity(dimmed ? 0.22 : 1));
+    }}
+
+    function stopMapClick(event) {{
+      if (event.originalEvent) L.DomEvent.stopPropagation(event.originalEvent);
     }}
 
     function updateCatchmentCircle(school) {{
@@ -1616,8 +1590,8 @@ def build_map_html(rows, ranked_count=None):
         const faithFlag = school.is_faith_school
           ? '<span class="flag flag-faith" title="Faith school">F</span>'
           : '<span class="flag flag-nonfaith" title="Non-faith school">N</span>';
-        const commuteText = commuteState.active && Number.isFinite(school.commute_minutes)
-          ? `<div class="commute-time">${{school.commute_minutes.toFixed(0)}} min estimated commute</div>`
+        const catchmentMatchText = catchmentSearchState.active && school.contains_catchment_point
+          ? '<div class="catchment-match">Contains selected map point</div>'
           : '';
         const selectedPrice = priceValue(school);
         const priceText = Number.isFinite(selectedPrice)
@@ -1632,7 +1606,7 @@ def build_map_html(rows, ranked_count=None):
           <td>
             <div class="school">${{school.school_name}} ${{faithFlag}} ${{fsmFlag}} ${{ratioFlag}}</div>
             <div class="borough">${{school.borough}}</div>
-            ${{commuteText}}
+            ${{catchmentMatchText}}
             ${{familyAreaText}}
             ${{priceText}}
           </td>
@@ -1644,62 +1618,42 @@ def build_map_html(rows, ranked_count=None):
       }});
     }}
 
-    function updateCommuteSearch(origin = commuteState.origin) {{
+    function updateCatchmentSearch(origin) {{
       if (!origin) return;
-      commuteState.active = true;
-      commuteState.origin = origin;
-
-      const minutes = Math.max(5, Math.min(90, Number(commuteMinutesEl.value) || 30));
-      commuteMinutesEl.value = minutes;
-      const mode = commuteModes[commuteModeEl.value] || commuteModes.transit;
+      catchmentSearchState.active = true;
+      catchmentSearchState.origin = origin;
 
       schools.forEach((school) => {{
-        school.commute_minutes = estimateMinutes(origin, school);
+        const radius = Number(school.catchment_radius_m);
+        school.contains_catchment_point = Number.isFinite(radius) &&
+          radius > 0 &&
+          distanceKm(origin, {{ lat: school.latitude, lng: school.longitude }}) * 1000 <= radius;
       }});
 
-      if (commuteState.originMarker) commuteState.originMarker.setLatLng(origin);
+      if (catchmentSearchState.originMarker) catchmentSearchState.originMarker.setLatLng(origin);
       else {{
         const originIcon = L.divIcon({{
           className: "",
-          html: '<div class="origin-dot" title="Commute starting point"></div>',
+          html: '<div class="origin-dot" title="Selected catchment point"></div>',
           iconSize: [20, 20],
           iconAnchor: [10, 10]
         }});
-        commuteState.originMarker = L.marker(origin, {{ icon: originIcon, keyboard: false }}).addTo(map);
-      }}
-
-      const rangeMeters = (minutes - mode.fixedMinutes) / 60 * mode.speedKmh / mode.routeFactor * 1000;
-      if (commuteState.rangeCircle) {{
-        commuteState.rangeCircle.setLatLng(origin);
-        commuteState.rangeCircle.setRadius(Math.max(0, rangeMeters));
-      }} else {{
-        commuteState.rangeCircle = L.circle(origin, {{
-          radius: Math.max(0, rangeMeters),
-          color: "#045d56",
-          weight: 1.5,
-          fillColor: "#045d56",
-          fillOpacity: 0.08,
-          interactive: false
-        }}).addTo(map);
+        catchmentSearchState.originMarker = L.marker(origin, {{ icon: originIcon, keyboard: false }}).addTo(map);
       }}
 
       applyFilters();
     }}
 
-    function clearCommuteSearch() {{
-      commuteState.active = false;
-      commuteState.origin = null;
+    function clearCatchmentSearch() {{
+      catchmentSearchState.active = false;
+      catchmentSearchState.origin = null;
       schools.forEach((school) => {{
-        delete school.commute_minutes;
+        delete school.contains_catchment_point;
         setLayerDimmed(school, false);
       }});
-      if (commuteState.originMarker) {{
-        map.removeLayer(commuteState.originMarker);
-        commuteState.originMarker = null;
-      }}
-      if (commuteState.rangeCircle) {{
-        map.removeLayer(commuteState.rangeCircle);
-        commuteState.rangeCircle = null;
+      if (catchmentSearchState.originMarker) {{
+        map.removeLayer(catchmentSearchState.originMarker);
+        catchmentSearchState.originMarker = null;
       }}
       applyFilters();
     }}
@@ -1751,11 +1705,9 @@ def build_map_html(rows, ranked_count=None):
     }}
 
     function applyFilters() {{
-      const commuteMinutes = Math.max(5, Math.min(90, Number(commuteMinutesEl.value) || 30));
-      const commuteMode = commuteModes[commuteModeEl.value] || commuteModes.transit;
       const matches = schools
         .filter((school) => {{
-          const commuteOk = !commuteState.active || school.commute_minutes <= commuteMinutes;
+          const catchmentOk = !catchmentSearchState.active || school.contains_catchment_point;
           const selectedPrice = priceValue(school);
           const priceOk = !priceState.active || (Number.isFinite(selectedPrice) && selectedPrice <= priceState.maxPrice);
           const familyAreaOk = !filterState.familyAreaMin || (Number.isFinite(school.family_area_rating) && school.family_area_rating >= filterState.familyAreaMin);
@@ -1764,7 +1716,7 @@ def build_map_html(rows, ranked_count=None):
             (filterState.faith === "faith" && school.is_faith_school) ||
             (filterState.faith === "nonfaith" && !school.is_faith_school);
           const fsmOk = Number.isFinite(school.fsm_percent) && school.fsm_percent <= filterState.fsmMax;
-          return commuteOk && priceOk && familyAreaOk && faithOk && fsmOk;
+          return catchmentOk && priceOk && familyAreaOk && faithOk && fsmOk;
         }})
         .sort((a, b) => a.rank - b.rank);
 
@@ -1772,9 +1724,9 @@ def build_map_html(rows, ranked_count=None):
       schools.forEach((school) => setLayerDimmed(school, !matchRanks.has(school.rank)));
       renderRows(matches);
 
-      commuteStatusEl.textContent = commuteState.active
-        ? `${{matches.filter((school) => school.commute_minutes <= commuteMinutes).length}} matching schools within ${{commuteMinutes}} min by ${{commuteMode.label}}.`
-        : "Map clicks set commute points; marker clicks open school details.";
+      catchmentSearchStatusEl.textContent = catchmentSearchState.active
+        ? `${{matches.length}} schools match all active filters and contain the selected point in their catchment.`
+        : "Map clicks find source-backed catchment circles containing that point.";
       priceStatusEl.textContent = priceState.active
         ? `${{matches.length}} schools match all active filters. Price filter uses ${{priceState.metric}} <= ${{formatCurrency(priceState.maxPrice)}}.`
         : "Uses terraced sales within 0.5 miles in the last 2 years.";
@@ -1823,8 +1775,12 @@ def build_map_html(rows, ranked_count=None):
         bubblingMouseEvents: false
       }});
       marker.bindPopup(() => popupHtml(school));
-      marker.on("click", () => activate(school.rank));
+      marker.on("click", (event) => {{
+        stopMapClick(event);
+        activate(school.rank);
+      }});
 
+      const overlays = [];
       if (school.catchment_note) {{
         const catchmentHalo = L.circleMarker([school.latitude, school.longitude], {{
           radius: 10,
@@ -1836,11 +1792,12 @@ def build_map_html(rows, ranked_count=None):
           className: "catchment-halo"
         }});
         catchmentHalo.addTo(map);
+        overlays.push(catchmentHalo);
       }}
 
       marker.addTo(map);
       markerByRank.set(school.rank, marker);
-      schoolLayers.set(school.rank, {{ marker, overlays: [] }});
+      schoolLayers.set(school.rank, {{ marker, overlays }});
       bounds.push([school.latitude, school.longitude]);
 
       if ((school.catchment_note || "").toLowerCase().includes("all applicants offered")) {{
@@ -1855,7 +1812,10 @@ def build_map_html(rows, ranked_count=None):
           keyboard: false,
           bubblingMouseEvents: false
         }});
-        allApplicantsOverlay.on("click", () => activate(school.rank));
+        allApplicantsOverlay.on("click", (event) => {{
+          stopMapClick(event);
+          activate(school.rank);
+        }});
         allApplicantsOverlay.addTo(map);
         schoolLayers.get(school.rank).overlays.push(allApplicantsOverlay);
       }}
@@ -1872,7 +1832,10 @@ def build_map_html(rows, ranked_count=None):
           keyboard: false,
           bubblingMouseEvents: false
         }});
-        flagOverlay.on("click", () => activate(school.rank));
+        flagOverlay.on("click", (event) => {{
+          stopMapClick(event);
+          activate(school.rank);
+        }});
         flagOverlay.addTo(map);
         schoolLayers.get(school.rank).overlays.push(flagOverlay);
       }}
@@ -1889,17 +1852,18 @@ def build_map_html(rows, ranked_count=None):
           keyboard: false,
           bubblingMouseEvents: false
         }});
-        ratioOverlay.on("click", () => activate(school.rank));
+        ratioOverlay.on("click", (event) => {{
+          stopMapClick(event);
+          activate(school.rank);
+        }});
         ratioOverlay.addTo(map);
         schoolLayers.get(school.rank).overlays.push(ratioOverlay);
       }}
     }});
 
     applyFilters();
-    map.on("click", (event) => updateCommuteSearch(event.latlng));
-    commuteMinutesEl.addEventListener("change", () => updateCommuteSearch());
-    commuteModeEl.addEventListener("change", () => updateCommuteSearch());
-    clearCommuteEl.addEventListener("click", clearCommuteSearch);
+    map.on("click", (event) => updateCatchmentSearch(event.latlng));
+    clearCatchmentSearchEl.addEventListener("click", clearCatchmentSearch);
     priceMaxEl.addEventListener("input", updatePriceFilter);
     priceMetricEl.addEventListener("change", updatePriceFilter);
     clearPriceEl.addEventListener("click", clearPriceFilter);

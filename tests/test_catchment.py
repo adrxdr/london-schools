@@ -180,6 +180,24 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn("familyAreaMin: 50", html)
         self.assertIn("applyFilters();", html)
 
+    def test_map_click_filters_to_schools_whose_catchment_contains_point(self):
+        html = build_map.build_map_html([self.sample_school()])
+
+        self.assertIn("function updateCatchmentSearch(origin)", html)
+        self.assertIn("school.contains_catchment_point", html)
+        self.assertIn("distanceKm(origin, { lat: school.latitude, lng: school.longitude }) * 1000 <= radius", html)
+        self.assertIn("map.on(\"click\", (event) => updateCatchmentSearch(event.latlng));", html)
+        self.assertIn("function stopMapClick(event)", html)
+        self.assertIn("stopMapClick(event);", html)
+
+    def test_transit_estimation_ui_is_removed(self):
+        html = build_map.build_map_html([self.sample_school()])
+
+        self.assertNotIn("Transit estimate", html)
+        self.assertNotIn("commuteMinutes", html)
+        self.assertNotIn("commuteMode", html)
+        self.assertNotIn("estimateMinutes", html)
+
     def test_fsm_warning_threshold_is_35_percent(self):
         html = build_map.build_map_html([self.sample_school()])
 
