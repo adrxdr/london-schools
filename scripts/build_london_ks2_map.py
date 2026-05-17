@@ -180,6 +180,7 @@ def catchment_lookup_key(row):
         "st mary's ce primary school putney": "st mary's ce primary school putney",
         "st michael's ce primary school": "st michael's ce primary school",
         "roehampton church forest primary school": "roehampton church forest school",
+        "rutherford house school": "rutherford house primary school",
     }
     if name in LINKED_CATCHMENT_SCHOOL_ALIASES:
         return LINKED_CATCHMENT_SCHOOL_ALIASES[name]["catchment_key"]

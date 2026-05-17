@@ -51,6 +51,22 @@ class CatchmentTests(unittest.TestCase):
         self.assertEqual(rows[0]["catchment_source_year"], 2026)
         self.assertIn("Honeywell Infant School", rows[0]["catchment_note"])
 
+    def test_rutherford_house_matches_primary_school_pdf_name(self):
+        rows = [
+            {
+                "school_name": "Rutherford House School",
+                "borough": "Wandsworth",
+            },
+        ]
+
+        build_map.add_catchment_metadata(rows)
+
+        self.assertEqual(rows[0]["catchment_radius_m"], 777)
+        self.assertEqual(
+            rows[0]["catchment_note"],
+            "Furthest distance offered under proximity criterion",
+        )
+
     def test_build_map_html_draws_catchment_circle_from_school_click(self):
         html = build_map.build_map_html([
             {
