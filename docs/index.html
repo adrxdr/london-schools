@@ -81,6 +81,21 @@
       font-size: 0.93rem;
       line-height: 1.45;
     }
+    .method h2 {
+      margin: 0 0 8px;
+      font-size: 0.98rem;
+      letter-spacing: -0.01em;
+    }
+    .method p {
+      margin: 0 0 8px;
+    }
+    .method ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .method li {
+      margin: 5px 0;
+    }
     .commute-tool {
       display: grid;
       gap: 10px;
@@ -314,7 +329,16 @@
         <div class="card"><strong>11+</strong><span>Minimum eligible pupils</span></div>
       </div>
       <div class="method">
-        Composite score = average percentile across Reading scaled score, Maths scaled score, GPS scaled score, and the combined Reading/Writing/Maths percentages at the expected and higher standards. Higher values are better across all five measures.
+        <h2>Methodology</h2>
+        <p><strong>Top 500:</strong> all London primary-age schools with 2025 KS2 results are scored first; the 500 highest composite scores are mapped.</p>
+        <ul>
+          <li><strong>Academic score:</strong> average percentile across five DfE measures: Reading, Maths and GPS scaled scores, plus Reading/Writing/Maths at expected and higher standards. Higher is better.</li>
+          <li><strong>Eligibility:</strong> excludes closed schools, schools outside London, schools above primary age, and cohorts below 11 eligible pupils.</li>
+          <li><strong>Location:</strong> school postcodes are geocoded, so markers are approximate postcode-level locations.</li>
+          <li><strong>House-price filter:</strong> median/average sold price for terraced houses within 0.5 miles, using HM Land Registry Price Paid Data since 16 May 2024. Popups show sale counts because small samples can be noisy.</li>
+          <li><strong>Family area rating:</strong> 0-100 proxy, split 50/50 between recent local safety and lower deprivation. Safety uses weighted data.police.uk street-level crimes within 1 mile; deprivation uses the English Index of Multiple Deprivation 2019 for the school postcode LSOA.</li>
+          <li><strong>Commute filter:</strong> rough distance-based estimates only, intended for shortlisting before checking live routes.</li>
+        </ul>
       </div>
       <div class="commute-tool">
         <div class="commute-title">Find schools near a commute point</div>
