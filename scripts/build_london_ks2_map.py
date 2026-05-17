@@ -1252,8 +1252,8 @@ def build_map_html(rows, ranked_count=None):
         <div class="commute-note">Source: HM Land Registry Price Paid Data. Small samples can be lumpy, so each popup includes the sale count.</div>
         <div class="commute-title">Filter by family area rating</div>
         <label>
-          <span class="range-label"><span>Minimum family area rating</span><strong id="familyAreaMinValue">0</strong></span>
-          <input id="familyAreaMin" type="range" min="0" max="100" step="1" value="0">
+          <span class="range-label"><span>Minimum family area rating</span><strong id="familyAreaMinValue">50</strong></span>
+          <input id="familyAreaMin" type="range" min="0" max="100" step="1" value="50">
         </label>
         <button id="clearFamilyArea" class="secondary" type="button">Clear area filter</button>
         <div id="familyAreaStatus" class="commute-status">Family area rating blends safety and lower deprivation, weighted equally.</div>
@@ -1345,7 +1345,7 @@ def build_map_html(rows, ranked_count=None):
     const filterState = {{
       faith: "all",
       fsmMax: 100,
-      familyAreaMin: 0
+      familyAreaMin: 50
     }};
 
     function markerColor(rank) {{
@@ -1728,7 +1728,7 @@ def build_map_html(rows, ranked_count=None):
       }}
     }});
 
-    renderRows(schools);
+    applyFilters();
     map.on("click", (event) => updateCommuteSearch(event.latlng));
     commuteMinutesEl.addEventListener("change", () => updateCommuteSearch());
     commuteModeEl.addEventListener("change", () => updateCommuteSearch());
