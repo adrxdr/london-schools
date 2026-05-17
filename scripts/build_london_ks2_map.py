@@ -1218,7 +1218,7 @@ def build_map_html(rows, ranked_count=None):
       height: 100vh;
     }}
     .catchment-halo {{
-      filter: drop-shadow(0 0 6px rgba(184, 67, 47, 0.48));
+      filter: drop-shadow(0 0 4px rgba(34, 94, 168, 0.42));
     }}
     .leaflet-popup-content-wrapper {{
       border-radius: 14px;
@@ -1346,7 +1346,7 @@ def build_map_html(rows, ranked_count=None):
           <li><strong>House-price filter:</strong> median/average sold price for terraced houses within 0.5 miles, using HM Land Registry Price Paid Data since 16 May 2024. Popups show sale counts because small samples can be noisy.</li>
           <li><strong>Family area rating:</strong> 0-100 proxy, split 50/50 between recent local safety and lower deprivation. Safety uses weighted data.police.uk street-level crimes within 1 mile; deprivation uses the English Index of Multiple Deprivation 2019 for the school postcode LSOA.</li>
           <li><strong>Commute filter:</strong> rough distance-based estimates only, intended for shortlisting before checking live routes.</li>
-          <li><strong>Catchment circles:</strong> shown only where the latest source-backed allocation distance is available. Sources now include Wandsworth 2026, Hackney 2026, and Haringey 2025. Source-backed schools have an amber halo before you click. A green ALL badge means all applicants were offered, so no cut-off radius was needed.</li>
+          <li><strong>Catchment circles:</strong> shown only where the latest source-backed allocation distance is available. Sources now include Wandsworth 2026, Hackney 2026, and Haringey 2025. Source-backed schools have a blue halo before you click. A green ALL badge means all applicants were offered, so no cut-off radius was needed.</li>
         </ul>
       </div>
       <div class="commute-tool">
@@ -1827,9 +1827,9 @@ def build_map_html(rows, ranked_count=None):
 
       if (school.catchment_note) {{
         const catchmentHalo = L.circleMarker([school.latitude, school.longitude], {{
-          radius: 13,
-          weight: 3.5,
-          color: "#b8432f",
+          radius: 10,
+          weight: 2.5,
+          color: "#225ea8",
           opacity: 0.95,
           fill: false,
           interactive: false,
