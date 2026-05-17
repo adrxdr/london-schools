@@ -115,6 +115,10 @@ WANDSWORTH_2026_CATCHMENTS = {
         "radius_m": 838,
         "note": "Furthest distance offered in the listed Catholic category",
     },
+    "honeywell infant school": {
+        "radius_m": 1071,
+        "note": "Furthest distance offered under proximity criterion",
+    },
     "john burns primary school": {"note": "All applicants offered"},
     "ronald ross primary school": {
         "radius_m": 301,
@@ -144,6 +148,14 @@ WANDSWORTH_2026_CATCHMENTS = {
     "trinity st mary's primary school": {"note": "All applicants offered"},
 }
 
+LINKED_CATCHMENT_SCHOOL_ALIASES = {
+    "honeywell junior school": {
+        "catchment_key": "honeywell infant school",
+        "source_school_name": "Honeywell Infant School",
+        "reason": "Reception admissions are published for the linked infant school",
+    },
+}
+
 
 def normalize_school_name_for_catchment(name):
     normalized = (name or "").lower()
@@ -169,7 +181,17 @@ def catchment_lookup_key(row):
         "st michael's ce primary school": "st michael's ce primary school",
         "roehampton church forest primary school": "roehampton church forest school",
     }
+    if name in LINKED_CATCHMENT_SCHOOL_ALIASES:
+        return LINKED_CATCHMENT_SCHOOL_ALIASES[name]["catchment_key"]
     return aliases.get(name, name)
+
+
+def catchment_alias_note(row):
+    name = normalize_school_name_for_catchment(row.get("school_name"))
+    alias = LINKED_CATCHMENT_SCHOOL_ALIASES.get(name)
+    if not alias:
+        return None
+    return f"{alias['reason']} ({alias['source_school_name']})"
 
 
 def add_catchment_metadata(rows):
@@ -191,7 +213,11 @@ def add_catchment_metadata(rows):
         row["catchment_source_year"] = WANDSWORTH_CATCHMENT_SOURCE["year"]
         row["catchment_source_name"] = WANDSWORTH_CATCHMENT_SOURCE["name"]
         row["catchment_source_url"] = WANDSWORTH_CATCHMENT_SOURCE["url"]
-        row["catchment_note"] = catchment["note"]
+        note = catchment["note"]
+        alias_note = catchment_alias_note(row)
+        if alias_note:
+            note = f"{note}; {alias_note}"
+        row["catchment_note"] = note
 
 
 def parse_number(value):

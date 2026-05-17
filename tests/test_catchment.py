@@ -37,6 +37,20 @@ class CatchmentTests(unittest.TestCase):
         self.assertIsNone(rows[1]["catchment_radius_m"])
         self.assertEqual(rows[1]["catchment_note"], "All applicants offered")
 
+    def test_junior_school_can_inherit_reception_catchment_from_linked_infant(self):
+        rows = [
+            {
+                "school_name": "Honeywell Junior School",
+                "borough": "Wandsworth",
+            },
+        ]
+
+        build_map.add_catchment_metadata(rows)
+
+        self.assertEqual(rows[0]["catchment_radius_m"], 1071)
+        self.assertEqual(rows[0]["catchment_source_year"], 2026)
+        self.assertIn("Honeywell Infant School", rows[0]["catchment_note"])
+
     def test_build_map_html_draws_catchment_circle_from_school_click(self):
         html = build_map.build_map_html([
             {
