@@ -1092,6 +1092,9 @@ def build_map_html(rows, ranked_count=None):
     #map {{
       height: 100vh;
     }}
+    .catchment-halo {{
+      filter: drop-shadow(0 0 6px rgba(184, 67, 47, 0.48));
+    }}
     .leaflet-popup-content-wrapper {{
       border-radius: 14px;
     }}
@@ -1210,7 +1213,7 @@ def build_map_html(rows, ranked_count=None):
           <li><strong>House-price filter:</strong> median/average sold price for terraced houses within 0.5 miles, using HM Land Registry Price Paid Data since 16 May 2024. Popups show sale counts because small samples can be noisy.</li>
           <li><strong>Family area rating:</strong> 0-100 proxy, split 50/50 between recent local safety and lower deprivation. Safety uses weighted data.police.uk street-level crimes within 1 mile; deprivation uses the English Index of Multiple Deprivation 2019 for the school postcode LSOA.</li>
           <li><strong>Commute filter:</strong> rough distance-based estimates only, intended for shortlisting before checking live routes.</li>
-          <li><strong>Catchment circles:</strong> shown only where the latest source-backed allocation distance is available. Wandsworth uses its 2026 reception allocation PDF; schools marked "all applicants offered" do not get a radius because no cut-off distance was needed.</li>
+          <li><strong>Catchment circles:</strong> shown only where the latest source-backed allocation distance is available. Wandsworth uses its 2026 reception allocation PDF; schools with a loaded radius have an amber halo around their marker before you click; schools marked "all applicants offered" do not get a radius because no cut-off distance was needed.</li>
         </ul>
       </div>
       <div class="commute-tool">
@@ -1688,6 +1691,20 @@ def build_map_html(rows, ranked_count=None):
       }});
       marker.bindPopup(() => popupHtml(school));
       marker.on("click", () => activate(school.rank));
+
+      if (Number(school.catchment_radius_m) > 0) {{
+        const catchmentHalo = L.circleMarker([school.latitude, school.longitude], {{
+          radius: 13,
+          weight: 3.5,
+          color: "#b8432f",
+          opacity: 0.95,
+          fill: false,
+          interactive: false,
+          className: "catchment-halo"
+        }});
+        catchmentHalo.addTo(map);
+      }}
+
       marker.addTo(map);
       markerByRank.set(school.rank, marker);
       schoolLayers.set(school.rank, {{ marker, overlays: [] }});

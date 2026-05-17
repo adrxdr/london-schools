@@ -106,6 +106,8 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn("function updateCatchmentCircle(school)", html)
         self.assertIn("catchment_radius_m", html)
         self.assertIn("Catchment distance", html)
+        self.assertIn("catchment-halo", html)
+        self.assertIn("Number(school.catchment_radius_m) > 0", html)
 
     def test_family_area_filter_defaults_to_50(self):
         html = build_map.build_map_html([self.sample_school()])
