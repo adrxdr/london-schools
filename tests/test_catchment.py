@@ -204,6 +204,40 @@ class CatchmentTests(unittest.TestCase):
         self.assertIsNone(rows[1]["catchment_radius_m"])
         self.assertIn("Linked infant school", rows[1]["catchment_note"])
 
+    def test_barnet_uses_2026_allocation_pdf_for_numeric_and_demand_met_rows(self):
+        rows = [
+            {"school_name": "Ashmole Primary School", "borough": "Barnet"},
+            {"school_name": "Christ Church Primary School", "borough": "Barnet"},
+            {"school_name": "St Andrew's CofE Voluntary Aided Primary School, Totteridge", "borough": "Barnet"},
+        ]
+
+        build_map.add_catchment_metadata(rows)
+
+        self.assertEqual(rows[0]["catchment_radius_m"], 798)
+        self.assertEqual(rows[0]["catchment_source_year"], 2026)
+        self.assertIn("Barnet Council", rows[0]["catchment_source_name"])
+        self.assertIn("0.496 miles", rows[0]["catchment_note"])
+        self.assertIsNone(rows[1]["catchment_radius_m"])
+        self.assertEqual(rows[1]["catchment_note"], "Demand met")
+        self.assertEqual(rows[2]["catchment_radius_m"], 1028)
+        self.assertIn("All Others Living in the Parish", rows[2]["catchment_note"])
+
+    def test_barnet_junior_schools_can_use_linked_infant_allocation_rows(self):
+        rows = [
+            {"school_name": "Moss Hall Junior School", "borough": "Barnet"},
+            {"school_name": "Brookland Junior School", "borough": "Barnet"},
+            {"school_name": "The Annunciation RC Junior School", "borough": "Barnet"},
+        ]
+
+        build_map.add_catchment_metadata(rows)
+
+        self.assertEqual(rows[0]["catchment_radius_m"], 745)
+        self.assertIn("Moss Hall Infant", rows[0]["catchment_note"])
+        self.assertIsNone(rows[1]["catchment_radius_m"])
+        self.assertIn("Brookland Infant", rows[1]["catchment_note"])
+        self.assertIsNone(rows[2]["catchment_radius_m"])
+        self.assertIn("Annunciation Catholic Infant", rows[2]["catchment_note"])
+
     def test_build_map_html_draws_catchment_circle_from_school_click(self):
         html = build_map.build_map_html([self.sample_school()])
 

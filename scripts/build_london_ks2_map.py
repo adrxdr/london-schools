@@ -113,6 +113,12 @@ HACKNEY_CATCHMENT_SOURCE = {
     "url": "https://education.hackney.gov.uk/sites/default/files/document/Applications%20and%20Offers%20at%20Hackney%20Primary%20Schools%202018-26.pdf",
 }
 
+BARNET_CATCHMENT_SOURCE = {
+    "name": "Barnet Council primary school allocations",
+    "year": 2026,
+    "url": "https://www.barnet.gov.uk/sites/default/files/how_primary_school_places_were_allocated_on_16_april_2026.pdf",
+}
+
 
 def miles_catchment(miles):
     return {
@@ -147,6 +153,10 @@ def no_distance_catchment(note="No final-distance cut-off published in the lates
 
 
 def all_offered_catchment(note="All on-time applicants offered"):
+    return {"note": note}
+
+
+def demand_met_catchment(note="Demand met"):
     return {"note": note}
 
 
@@ -272,6 +282,183 @@ HACKNEY_2026_CATCHMENTS = {
     "thomas fairchild community school": miles_catchment(1.993),
     "william patten primary school": miles_catchment(0.466),
     "woodberry down community primary school": miles_catchment(2.795),
+}
+
+BARNET_2026_CATCHMENTS = {
+    "akiva school": criterion_miles_catchment(0.565, "top faith priority"),
+    "all saints' ce school n20": demand_met_catchment(),
+    "all saints' ce school nw2": demand_met_catchment(),
+    "alma primary": demand_met_catchment(),
+    "annunciation catholic infant": demand_met_catchment(),
+    "ashmole primary school": criterion_miles_catchment(0.496, "Straight-line distance"),
+    "beis yaakov jewish": no_distance_catchment("Other Orthodox Jewish girls (lottery)"),
+    "beit shvidler jewish": criterion_miles_catchment(
+        0.428, "Orthodox Jewish attending another synagogue"
+    ),
+    "blessed dominic catholic": criterion_miles_catchment(0.159, "Other Faiths"),
+    "brookland infant": demand_met_catchment(),
+    "brunswick park primary": demand_met_catchment(),
+    "brunswick park primary and nursery school": demand_met_catchment(),
+    "brunswick park primary school": demand_met_catchment(),
+    "chalgrove primary school": criterion_miles_catchment(
+        0.46, "children living in defined area"
+    ),
+    "childs hill": demand_met_catchment(),
+    "christ church ce school": demand_met_catchment(),
+    "christ church primary school": demand_met_catchment(),
+    "claremont primary school": demand_met_catchment(),
+    "colindale primary": criterion_miles_catchment(
+        0.976, "children living outside defined area"
+    ),
+    "courtland primary": criterion_miles_catchment(
+        0.794, "children living outside defined area"
+    ),
+    "courtland school": criterion_miles_catchment(
+        0.794, "children living outside defined area"
+    ),
+    "deansbrook infant": demand_met_catchment(),
+    "dollis": demand_met_catchment(),
+    "etz chaim jewish primary": demand_met_catchment(),
+    "foulds primary": criterion_miles_catchment(
+        0.448, "children living outside defined area"
+    ),
+    "foulds school": criterion_miles_catchment(
+        0.448, "children living outside defined area"
+    ),
+    "goldbeaters primary school": criterion_miles_catchment(
+        0.663, "children living in defined area"
+    ),
+    "hasmonean primary school": demand_met_catchment(),
+    "hollickwood school": demand_met_catchment(),
+    "holy trinity ce": demand_met_catchment(),
+    "holy trinity ce primary school": demand_met_catchment(),
+    "independent jewish day": no_distance_catchment("Certificate of religious practice (lottery)"),
+    "independent jewish day school": no_distance_catchment(
+        "Certificate of religious practice (lottery)"
+    ),
+    "livingstone primary": criterion_miles_catchment(
+        0.408, "children living in defined area"
+    ),
+    "livingstone primary and nursery school": criterion_miles_catchment(
+        0.408, "children living in defined area"
+    ),
+    "livingstone primary school": criterion_miles_catchment(
+        0.408, "children living in defined area"
+    ),
+    "london academy": criterion_miles_catchment(0.165, "Geographical Distance"),
+    "mathilda marks kennedy": demand_met_catchment(),
+    "menorah foundation jewish": no_distance_catchment(
+        "Others who do not meet the religious criteria (lottery)"
+    ),
+    "menorah foundation school": no_distance_catchment(
+        "Others who do not meet the religious criteria (lottery)"
+    ),
+    "menorah primary boys": no_distance_catchment(
+        "Orthodox Jewish who are first children (lottery)"
+    ),
+    "menorah primary school for boys": no_distance_catchment(
+        "Orthodox Jewish who are first children (lottery)"
+    ),
+    "menorah primary girls": no_distance_catchment("Other Orthodox Jewish children (lottery)"),
+    "menorah primary school for girls": no_distance_catchment(
+        "Other Orthodox Jewish children (lottery)"
+    ),
+    "monken hadley ce": no_distance_catchment(
+        "Children within 2 miles and worship at a Holy Trinity church; no final straight-line cut-off published"
+    ),
+    "monken hadley ce primary school": no_distance_catchment(
+        "Children within 2 miles and worship at a Holy Trinity church; no final straight-line cut-off published"
+    ),
+    "monkfrith primary": criterion_miles_catchment(
+        1.019, "children living outside defined area"
+    ),
+    "monkfrith primary school": criterion_miles_catchment(
+        1.019, "children living outside defined area"
+    ),
+    "moss hall infant": criterion_miles_catchment(
+        0.463, "children living outside defined area"
+    ),
+    "osidge": demand_met_catchment(),
+    "our lady of lourdes rc": demand_met_catchment(),
+    "pardes house jewish": criterion_miles_catchment(
+        1.353, "Other Orthodox Jewish children within 2.5 miles"
+    ),
+    "parkfield primary": demand_met_catchment(),
+    "rimon jewish": criterion_miles_catchment(
+        0.49, "Faith Band: GG Synagogue Attendance Level 1"
+    ),
+    "rimon jewish primary school": criterion_miles_catchment(
+        0.49, "Faith Band: GG Synagogue Attendance Level 1"
+    ),
+    "rosh pinah jewish": demand_met_catchment(),
+    "rosh pinah primary school": demand_met_catchment(),
+    "sacks morasha jewish": no_distance_catchment(
+        "Priority children attending Orthodox synagogue in catchment (lottery)"
+    ),
+    "sacks morasha jewish primary school": no_distance_catchment(
+        "Priority children attending Orthodox synagogue in catchment (lottery)"
+    ),
+    "sacred heart rc": demand_met_catchment(),
+    "sacred heart roman catholic primary school": demand_met_catchment(),
+    "st agnes' rc": criterion_miles_catchment(0.45, "Any Other Children"),
+    "st agnes' catholic primary school": criterion_miles_catchment(
+        0.45, "Any Other Children"
+    ),
+    "st andrew's ce": criterion_miles_catchment(0.639, "All Others Living in the Parish"),
+    "st andrew's ce voluntary aided primary school totteridge": criterion_miles_catchment(
+        0.639, "All Others Living in the Parish"
+    ),
+    "st catherine's catholic": criterion_miles_catchment(0.321, "Any other applicant"),
+    "st catherine's rc school": criterion_miles_catchment(0.321, "Any other applicant"),
+    "st john's ce n20": criterion_miles_catchment(
+        0.456, "Faith Band: worship at other Christian church"
+    ),
+    "st john's ce primary school": criterion_miles_catchment(
+        0.456, "Faith Band: worship at other Christian church"
+    ),
+    "st john's ce primary school and": criterion_miles_catchment(
+        0.456, "Faith Band: worship at other Christian church"
+    ),
+    "st john's ce primary and school": criterion_miles_catchment(
+        0.456, "Faith Band: worship at other Christian church"
+    ),
+    "st john's ce primary and nursery school": criterion_miles_catchment(
+        0.456, "Faith Band: worship at other Christian church"
+    ),
+    "st mary's ce en4": criterion_miles_catchment(
+        0.332, "resident of the four eligible parishes"
+    ),
+    "st mary's ce primary school east barnet": criterion_miles_catchment(
+        0.332, "resident of the four eligible parishes"
+    ),
+    "st mary's ce n3": criterion_miles_catchment(
+        0.884, "Any other applicant geographically"
+    ),
+    "st mary's ce primary school": criterion_miles_catchment(
+        0.884, "Any other applicant geographically"
+    ),
+    "st paul's ce nw7": demand_met_catchment(),
+    "st paul's ce primary school nw7": demand_met_catchment(),
+    "sunnyfields primary": criterion_miles_catchment(
+        0.472, "children living outside defined area"
+    ),
+    "sunnyfields primary school": criterion_miles_catchment(
+        0.472, "children living outside defined area"
+    ),
+    "the hyde": criterion_miles_catchment(0.511, "Inside catchment area"),
+    "the hyde school": criterion_miles_catchment(0.511, "Inside catchment area"),
+    "the orion primary": criterion_miles_catchment(
+        0.946, "children living outside defined area"
+    ),
+    "the orion primary school": criterion_miles_catchment(
+        0.946, "children living outside defined area"
+    ),
+    "whitings hill primary": criterion_miles_catchment(
+        0.768, "children living outside defined area"
+    ),
+    "whitings hill primary school": criterion_miles_catchment(
+        0.768, "children living outside defined area"
+    ),
 }
 
 EALING_CATCHMENT_SOURCE = {
@@ -501,6 +688,7 @@ SUTTON_2026_CATCHMENTS = {
 }
 
 CATCHMENT_SOURCES_BY_BOROUGH = {
+    "Barnet": BARNET_CATCHMENT_SOURCE,
     "Wandsworth": WANDSWORTH_CATCHMENT_SOURCE,
     "Haringey": HARINGEY_CATCHMENT_SOURCE,
     "Hackney": HACKNEY_CATCHMENT_SOURCE,
@@ -515,6 +703,7 @@ CATCHMENT_SOURCES_BY_BOROUGH = {
 }
 
 CATCHMENTS_BY_BOROUGH = {
+    "Barnet": BARNET_2026_CATCHMENTS,
     "Wandsworth": WANDSWORTH_2026_CATCHMENTS,
     "Haringey": HARINGEY_2025_CATCHMENTS,
     "Hackney": HACKNEY_2026_CATCHMENTS,
@@ -544,6 +733,26 @@ LINKED_CATCHMENT_SCHOOL_ALIASES = {
         "source_school_name": "South Harringay Infant School",
         "reason": "Reception admissions are published for the linked infant school",
     },
+    "deansbrook junior school": {
+        "catchment_key": "deansbrook infant",
+        "source_school_name": "Deansbrook Infant",
+        "reason": "Reception admissions are published for the linked infant school",
+    },
+    "moss hall junior school": {
+        "catchment_key": "moss hall infant",
+        "source_school_name": "Moss Hall Infant",
+        "reason": "Reception admissions are published for the linked infant school",
+    },
+    "brookland junior school": {
+        "catchment_key": "brookland infant",
+        "source_school_name": "Brookland Infant",
+        "reason": "Reception admissions are published for the linked infant school",
+    },
+    "the annunciation rc junior school": {
+        "catchment_key": "annunciation catholic infant",
+        "source_school_name": "Annunciation Catholic Infant",
+        "reason": "Reception admissions are published for the linked infant school",
+    },
 }
 
 
@@ -564,6 +773,8 @@ def normalize_school_name_for_catchment(name):
 
 def catchment_lookup_key(row):
     name = normalize_school_name_for_catchment(row.get("school_name"))
+    if row.get("borough") == "Barnet" and name == "st mary's ce primary school":
+        return name
     aliases = {
         "all saints ce primary school putney": "all saints ce primary school",
         "st mary's ce primary school": "st mary's ce primary school putney",
@@ -1617,7 +1828,7 @@ def build_map_html(rows, ranked_count=None):
           <li><strong>House-price filter:</strong> median/average sold price for terraced houses within 0.5 miles, using HM Land Registry Price Paid Data since 16 May 2024. Popups show sale counts because small samples can be noisy.</li>
           <li><strong>Family area rating:</strong> 0-100 proxy, split 50/50 between recent local safety and lower deprivation. Safety uses weighted data.police.uk street-level crimes within 1 mile; deprivation uses the English Index of Multiple Deprivation 2019 for the school postcode LSOA.</li>
           <li><strong>Catchment-point search:</strong> clicking the map highlights schools whose latest source-backed numeric catchment radius contains that point. Schools marked ALL are still source-backed, but have no cut-off radius to test against.</li>
-          <li><strong>Catchment circles:</strong> shown only where the latest official allocation source gives a distance or explicit no-distance outcome. Sources now include Brent 2026, Ealing 2026, Hackney 2026, Haringey 2025, Harrow 2026, Havering 2026, Newham 2026, Redbridge 2026, Sutton 2026, Tower Hamlets 2026, and Wandsworth 2026. Source-backed schools have an amber halo before you click. A green ALL badge means all applicants were offered, so no cut-off radius was needed. No estimated catchment distances are used.</li>
+          <li><strong>Catchment circles:</strong> shown only where the latest official allocation source gives a distance or explicit no-distance outcome. Sources now include Barnet 2026, Brent 2026, Ealing 2026, Hackney 2026, Haringey 2025, Harrow 2026, Havering 2026, Newham 2026, Redbridge 2026, Sutton 2026, Tower Hamlets 2026, and Wandsworth 2026. Source-backed schools have an amber halo before you click. A green ALL badge means all applicants were offered or demand was met, so no cut-off radius was needed. No estimated catchment distances are used.</li>
         </ul>
       </div>
       <div class="filter-tool">
@@ -2077,10 +2288,11 @@ def build_map_html(rows, ranked_count=None):
       schoolLayers.set(school.rank, {{ marker, overlays }});
       bounds.push([school.latitude, school.longitude]);
 
-      if ((school.catchment_note || "").toLowerCase().includes("all applicants offered")) {{
+      const catchmentNoteLower = (school.catchment_note || "").toLowerCase();
+      if (catchmentNoteLower.includes("all applicants offered") || catchmentNoteLower === "demand met") {{
         const allApplicantsIcon = L.divIcon({{
           className: "",
-          html: '<div class="map-flag map-flag-all" title="All applicants were offered a place">ALL</div>',
+          html: '<div class="map-flag map-flag-all" title="All applicants were offered a place, or demand was met">ALL</div>',
           iconSize: [24, 16],
           iconAnchor: [12, -3]
         }});
