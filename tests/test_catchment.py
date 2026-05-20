@@ -287,8 +287,17 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn("function clearCatchmentConnectorLines()", html)
         self.assertIn("L.polyline([origin, [school.latitude, school.longitude]]", html)
         self.assertIn("dashArray: \"5 7\"", html)
-        self.assertIn("catchmentSearchState.connectorLines.push(line)", html)
+        self.assertIn("catchmentSearchState.connectorLines.push(line, label)", html)
         self.assertIn("clearCatchmentConnectorLines();", html)
+
+    def test_dotted_connector_lines_show_distance_labels_in_metres(self):
+        html = build_map.build_map_html([self.sample_school()])
+
+        self.assertIn("const lineDistanceMetres = Math.round(", html)
+        self.assertIn("const labelLatLng = L.latLng(", html)
+        self.assertIn("connector-distance-label", html)
+        self.assertIn("${lineDistanceMetres.toLocaleString()} m", html)
+        self.assertIn("catchmentSearchState.connectorLines.push(line, label)", html)
 
     def test_transit_estimation_ui_is_removed(self):
         html = build_map.build_map_html([self.sample_school()])

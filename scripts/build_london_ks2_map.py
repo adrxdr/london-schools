@@ -1787,6 +1787,21 @@ def build_map_html(rows, ranked_count=None):
       border-radius: 999px;
       background: #fff8ef;
     }}
+    .connector-distance-label {{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(4, 93, 86, 0.28);
+      background: rgba(255, 252, 246, 0.94);
+      color: #045d56;
+      font-size: 0.72rem;
+      font-weight: 750;
+      line-height: 1;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(24, 33, 38, 0.18);
+    }}
     @media (max-width: 980px) {{
       body {{
         overflow: auto;
@@ -2117,6 +2132,8 @@ def build_map_html(rows, ranked_count=None):
       schools
         .filter((school) => school.contains_catchment_point)
         .forEach((school) => {{
+          const schoolLatLng = L.latLng(school.latitude, school.longitude);
+          const lineDistanceMetres = Math.round(distanceKm(origin, schoolLatLng) * 1000);
           const line = L.polyline([origin, [school.latitude, school.longitude]], {{
             color: "#045d56",
             weight: 2,
@@ -2124,8 +2141,22 @@ def build_map_html(rows, ranked_count=None):
             dashArray: "5 7",
             interactive: false
           }}).addTo(map);
+          const labelLatLng = L.latLng(
+            (origin.lat + school.latitude) / 2,
+            (origin.lng + school.longitude) / 2
+          );
+          const label = L.marker(labelLatLng, {{
+            icon: L.divIcon({{
+              className: "",
+              html: `<div class="connector-distance-label">${{lineDistanceMetres.toLocaleString()}} m</div>`,
+              iconSize: [1, 1],
+              iconAnchor: [0, 0]
+            }}),
+            keyboard: false,
+            interactive: false
+          }}).addTo(map);
           line.bringToBack();
-          catchmentSearchState.connectorLines.push(line);
+          catchmentSearchState.connectorLines.push(line, label);
         }});
     }}
 
