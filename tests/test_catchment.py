@@ -280,6 +280,16 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn("function stopMapClick(event)", html)
         self.assertIn("stopMapClick(event);", html)
 
+    def test_map_click_draws_dotted_lines_to_matching_catchment_schools(self):
+        html = build_map.build_map_html([self.sample_school()])
+
+        self.assertIn("connectorLines: []", html)
+        self.assertIn("function clearCatchmentConnectorLines()", html)
+        self.assertIn("L.polyline([origin, [school.latitude, school.longitude]]", html)
+        self.assertIn("dashArray: \"5 7\"", html)
+        self.assertIn("catchmentSearchState.connectorLines.push(line)", html)
+        self.assertIn("clearCatchmentConnectorLines();", html)
+
     def test_transit_estimation_ui_is_removed(self):
         html = build_map.build_map_html([self.sample_school()])
 

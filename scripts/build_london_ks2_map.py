@@ -1929,7 +1929,8 @@ def build_map_html(rows, ranked_count=None):
     const catchmentSearchState = {{
       active: false,
       origin: null,
-      originMarker: null
+      originMarker: null,
+      connectorLines: []
     }};
     const priceState = {{
       active: false,
@@ -2106,6 +2107,28 @@ def build_map_html(rows, ranked_count=None):
       }});
     }}
 
+    function clearCatchmentConnectorLines() {{
+      catchmentSearchState.connectorLines.forEach((line) => map.removeLayer(line));
+      catchmentSearchState.connectorLines = [];
+    }}
+
+    function drawCatchmentConnectorLines(origin) {{
+      clearCatchmentConnectorLines();
+      schools
+        .filter((school) => school.contains_catchment_point)
+        .forEach((school) => {{
+          const line = L.polyline([origin, [school.latitude, school.longitude]], {{
+            color: "#045d56",
+            weight: 2,
+            opacity: 0.78,
+            dashArray: "5 7",
+            interactive: false
+          }}).addTo(map);
+          line.bringToBack();
+          catchmentSearchState.connectorLines.push(line);
+        }});
+    }}
+
     function updateCatchmentSearch(origin) {{
       if (!origin) return;
       catchmentSearchState.active = true;
@@ -2129,6 +2152,7 @@ def build_map_html(rows, ranked_count=None):
         catchmentSearchState.originMarker = L.marker(origin, {{ icon: originIcon, keyboard: false }}).addTo(map);
       }}
 
+      drawCatchmentConnectorLines(origin);
       applyFilters();
     }}
 
@@ -2143,6 +2167,7 @@ def build_map_html(rows, ranked_count=None):
         map.removeLayer(catchmentSearchState.originMarker);
         catchmentSearchState.originMarker = null;
       }}
+      clearCatchmentConnectorLines();
       applyFilters();
     }}
 
