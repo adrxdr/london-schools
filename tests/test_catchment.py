@@ -248,7 +248,8 @@ class CatchmentTests(unittest.TestCase):
         self.assertNotIn("Published note", html)
         self.assertIn('typeof overlay.setStyle === "function"', html)
         self.assertIn("radius: 13", html)
-        self.assertIn('color: "#b8432f"', html)
+        self.assertIn('color: "#e11900"', html)
+        self.assertIn('fillColor: "#e11900"', html)
 
     def test_all_applicants_offered_schools_get_halo_and_badge(self):
         school = self.sample_school()
@@ -277,6 +278,7 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn(".floating-filter-widget", html)
         self.assertIn("top: 16px;", html)
         self.assertIn("right: 16px;", html)
+        self.assertIn("background: rgba(255, 252, 246, 0.78);", html)
         self.assertIn('id="floatingFilters"', html)
         self.assertIn('const filterToolEl = document.getElementById("floatingFilters");', html)
         self.assertIn('value="nonfaith" selected>Non-faith schools only</option>', html)
@@ -300,7 +302,9 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn(".clear-catchment-button", html)
         self.assertIn("bottom: 18px;", html)
         self.assertIn("right: 18px;", html)
-        self.assertIn("background: #c53a2f;", html)
+        self.assertIn("min-height: 58px;", html)
+        self.assertIn("padding: 15px 22px;", html)
+        self.assertIn("background: #e11900;", html)
         self.assertIn('clearCatchmentSearchEl.classList.remove("hidden");', html)
         self.assertIn('clearCatchmentSearchEl.classList.add("hidden");', html)
 

@@ -1678,7 +1678,7 @@ def build_map_html(rows, ranked_count=None):
       gap: 8px;
       padding: 12px;
       overflow: auto;
-      background: rgba(255, 252, 246, 0.94);
+      background: rgba(255, 252, 246, 0.78);
       border-color: rgba(24, 33, 38, 0.16);
       box-shadow: 0 22px 60px rgba(24, 33, 38, 0.22);
     }}
@@ -1705,15 +1705,15 @@ def build_map_html(rows, ranked_count=None):
       bottom: 18px;
       z-index: 710;
       width: auto;
-      min-height: 42px;
-      padding: 10px 14px;
+      min-height: 58px;
+      padding: 15px 22px;
       border: 1px solid rgba(255, 248, 239, 0.72);
       border-radius: 999px;
-      background: #c53a2f;
+      background: #e11900;
       color: #fffdf8;
-      font-size: 0.86rem;
+      font-size: 1.02rem;
       font-weight: 850;
-      box-shadow: 0 14px 34px rgba(197, 58, 47, 0.34);
+      box-shadow: 0 18px 42px rgba(225, 25, 0, 0.38);
     }}
     .clear-catchment-button.hidden {{
       display: none;
@@ -2419,11 +2419,11 @@ def build_map_html(rows, ranked_count=None):
       }} else {{
         catchmentState.circle = L.circle(center, {{
           radius,
-          color: "#b8432f",
-          weight: 2.25,
+          color: "#e11900",
+          weight: 3,
           dashArray: "8 6",
-          fillColor: "#b8432f",
-          fillOpacity: 0.08,
+          fillColor: "#e11900",
+          fillOpacity: 0.13,
           interactive: false
         }}).addTo(map);
       }}
@@ -2480,9 +2480,9 @@ def build_map_html(rows, ranked_count=None):
           const schoolLatLng = L.latLng(school.latitude, school.longitude);
           const lineDistanceMetres = Math.round(distanceKm(origin, schoolLatLng) * 1000);
           const line = L.polyline([origin, [school.latitude, school.longitude]], {{
-            color: "#045d56",
-            weight: 2,
-            opacity: 0.78,
+            color: "#e11900",
+            weight: 2.4,
+            opacity: 0.86,
             dashArray: "5 7",
             interactive: false
           }}).addTo(map);
@@ -2682,7 +2682,7 @@ def build_map_html(rows, ranked_count=None):
         const catchmentHalo = L.circleMarker([school.latitude, school.longitude], {{
           radius: 13,
           weight: 3.5,
-          color: "#b8432f",
+          color: "#e11900",
           opacity: 0.95,
           fill: false,
           interactive: false,
