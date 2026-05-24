@@ -1468,7 +1468,31 @@ def add_family_area_metrics(rows):
             row["family_area_rating"] = None
 
 
+def slugify_school_name_for_performance_url(name):
+    normalized = (name or "").lower()
+    normalized = normalized.replace("&", " and ")
+    normalized = normalized.replace("’", "")
+    normalized = normalized.replace("'", "")
+    normalized = re.sub(r"[^a-z0-9]+", "-", normalized)
+    return re.sub(r"^-+|-+$", "", normalized)
+
+
+def school_performance_url(row):
+    urn = row.get("school_urn")
+    slug = slugify_school_name_for_performance_url(row.get("school_name"))
+    if not urn or not slug:
+        return None
+    return f"https://www.compare-school-performance.service.gov.uk/school/{urn}/{slug}/primary"
+
+
+def add_performance_urls(rows):
+    for row in rows:
+        row["performance_url"] = school_performance_url(row)
+
+
 def build_map_html(rows, ranked_count=None):
+    rows = [dict(row) for row in rows]
+    add_performance_urls(rows)
     ranked_count_label = f"{ranked_count:,}" if ranked_count is not None else "n/a"
     rows_json = json.dumps(rows, ensure_ascii=False)
     rank_values = [row["rank"] for row in rows]
@@ -1778,6 +1802,14 @@ def build_map_html(rows, ranked_count=None):
       font-size: 0.76rem;
       line-height: 1.35;
     }}
+    .popup-section-note a {{
+      color: var(--accent);
+      font-weight: 750;
+      text-decoration: none;
+    }}
+    .popup-section-note a:hover {{
+      text-decoration: underline;
+    }}
     .popup-address {{
       margin-top: 8px;
       padding-top: 7px;
@@ -2079,6 +2111,19 @@ def build_map_html(rows, ranked_count=None):
         : school.terrace_median_price_2y_0_5mi;
     }}
 
+    function slugifySchoolName(name) {{
+      return String(name || "")
+        .toLowerCase()
+        .replace(/&/g, " and ")
+        .replace(/['’]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    }}
+
+    function schoolPerformanceUrl(school) {{
+      return school.performance_url || `https://www.compare-school-performance.service.gov.uk/school/${{school.school_urn}}/${{slugifySchoolName(school.school_name)}}/primary`;
+    }}
+
     function schoolShareUrl(school) {{
       const url = new URL(window.location.href);
       url.searchParams.set("school", school.rank);
@@ -2111,6 +2156,7 @@ def build_map_html(rows, ranked_count=None):
 
     function popupHtml(school) {{
       const shareUrl = schoolShareUrl(school);
+      const performanceUrl = schoolPerformanceUrl(school);
       const fsmFlag = school.fsm_percent > 35 ? '<span class="flag" title="More than 35% eligible for free school meals">!</span>' : '';
       const ratioFlag = school.anomalous_low_ptr ? '<span class="flag flag-ratio" title="Best 5% pupil-to-teacher ratio in London">T</span>' : '';
       const faithFlag = school.is_faith_school
@@ -2198,6 +2244,7 @@ def build_map_html(rows, ranked_count=None):
               <tr><th>Maths score</th><td>${{school.maths_score}}</td></tr>
               <tr><th>GPS score</th><td>${{school.gps_score}}</td></tr>
             </table>
+            <p class="popup-section-note"><a href="${{performanceUrl}}" target="_blank" rel="noopener noreferrer">DfE performance page</a></p>
           </section>
 
           <section class="popup-section">
@@ -2637,6 +2684,7 @@ def write_csv(path, rows):
         "school_name",
         "borough",
         "school_urn",
+        "performance_url",
         "age_range",
         "eligible_pupils",
         "total_pupils",
@@ -2762,6 +2810,7 @@ def main():
         )
 
     add_catchment_metadata(ranked_rows)
+    add_performance_urls(ranked_rows)
     write_csv(ALL_RANKED_CSV, ranked_rows)
 
     top_rows = [dict(row) for row in ranked_rows[:TOP_N]]

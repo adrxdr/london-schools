@@ -12,7 +12,7 @@ spec.loader.exec_module(build_map)
 class CatchmentTests(unittest.TestCase):
     def sample_school(self):
         return {
-            "school_urn": "x",
+            "school_urn": "101011",
             "school_name": "Sheringdale Primary School",
             "borough": "Wandsworth",
             "age_range": "4 to 11",
@@ -320,6 +320,17 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn('class="popup-table"', html)
         self.assertIn('class="popup-metric-grid"', html)
         self.assertIn('class="popup-address"', html)
+
+    def test_scores_section_links_to_dfe_performance_page(self):
+        school = self.sample_school()
+        school["school_name"] = "Honeywell Junior School"
+        html = build_map.build_map_html([school])
+
+        self.assertIn("function schoolPerformanceUrl(school)", html)
+        self.assertIn("slugifySchoolName(school.school_name)", html)
+        self.assertIn("compare-school-performance.service.gov.uk/school", html)
+        self.assertIn("/101011/honeywell-junior-school/primary", html)
+        self.assertIn("DfE performance page", html)
 
     def test_school_deep_link_reopens_selected_school_on_load(self):
         html = build_map.build_map_html([self.sample_school()])
