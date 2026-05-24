@@ -299,6 +299,25 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn("${lineDistanceMetres.toLocaleString()} m", html)
         self.assertIn("catchmentSearchState.connectorLines.push(line, label)", html)
 
+    def test_selected_school_popup_has_shareable_deep_link(self):
+        html = build_map.build_map_html([self.sample_school()])
+
+        self.assertIn("function schoolShareUrl(school)", html)
+        self.assertIn("url.searchParams.set(\"school\", school.rank)", html)
+        self.assertIn("function copySchoolLink(rank)", html)
+        self.assertIn("navigator.clipboard.writeText", html)
+        self.assertIn("Copy link", html)
+        self.assertIn("Direct link", html)
+
+    def test_school_deep_link_reopens_selected_school_on_load(self):
+        html = build_map.build_map_html([self.sample_school()])
+
+        self.assertIn("function selectedSchoolRankFromUrl()", html)
+        self.assertIn("new URLSearchParams(window.location.search)", html)
+        self.assertIn("window.location.hash.match", html)
+        self.assertIn("activate(initialSelectedRank, { center: true, updateUrl: false })", html)
+        self.assertIn("history.replaceState", html)
+
     def test_transit_estimation_ui_is_removed(self):
         html = build_map.build_map_html([self.sample_school()])
 

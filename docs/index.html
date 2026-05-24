@@ -324,6 +324,32 @@
       white-space: nowrap;
       box-shadow: 0 4px 12px rgba(24, 33, 38, 0.18);
     }
+    .share-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .share-row button,
+    .share-row a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      width: auto;
+      padding: 6px 9px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 750;
+      text-decoration: none;
+    }
+    .share-row a {
+      border: 1px solid rgba(24, 33, 38, 0.18);
+      background: #fffdf8;
+      color: var(--ink);
+    }
     @media (max-width: 980px) {
       body {
         overflow: auto;
@@ -498,7 +524,38 @@
         : school.terrace_median_price_2y_0_5mi;
     }
 
+    function schoolShareUrl(school) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("school", school.rank);
+      url.hash = `school-${school.rank}`;
+      return url.toString();
+    }
+
+    function selectedSchoolRankFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const queryRank = Number(params.get("school"));
+      if (Number.isFinite(queryRank) && queryRank > 0) return queryRank;
+      const hashMatch = window.location.hash.match(/^#school-(\d+)$/);
+      return hashMatch ? Number(hashMatch[1]) : null;
+    }
+
+    function writeSelectedSchoolUrl(school) {
+      if (!window.history || !window.history.replaceState) return;
+      history.replaceState(null, "", schoolShareUrl(school));
+    }
+
+    function copySchoolLink(rank) {
+      const school = schools.find((item) => item.rank === rank);
+      if (!school) return;
+      const shareUrl = schoolShareUrl(school);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareUrl);
+      }
+    }
+    window.copySchoolLink = copySchoolLink;
+
     function popupHtml(school) {
+      const shareUrl = schoolShareUrl(school);
       const fsmFlag = school.fsm_percent > 35 ? '<span class="flag" title="More than 35% eligible for free school meals">!</span>' : '';
       const ratioFlag = school.anomalous_low_ptr ? '<span class="flag flag-ratio" title="Best 5% pupil-to-teacher ratio in London">T</span>' : '';
       const faithFlag = school.is_faith_school
@@ -544,6 +601,10 @@
           <p>Higher standard (RWM): <strong>${school.higher_rwm}%</strong></p>
           <p>Scaled scores: Reading <strong>${school.reading_score}</strong>, Maths <strong>${school.maths_score}</strong>, GPS <strong>${school.gps_score}</strong></p>
           <p class="minor">${school.full_address}</p>
+          <div class="share-row">
+            <button type="button" onclick="copySchoolLink(${school.rank})">Copy link</button>
+            <a href="${shareUrl}" target="_blank" rel="noopener noreferrer">Direct link</a>
+          </div>
         </div>
       `;
     }
@@ -808,11 +869,14 @@
     }
 
     function activate(rank, options = {}) {
-      const { center = false } = options;
+      const { center = false, updateUrl = true } = options;
       rowByRank.forEach((row, key) => row.classList.toggle("active", key === rank));
       const marker = markerByRank.get(rank);
       const school = schools.find((item) => item.rank === rank);
-      if (school) updateCatchmentCircle(school);
+      if (school) {
+        updateCatchmentCircle(school);
+        if (updateUrl) writeSelectedSchoolUrl(school);
+      }
       if (marker) {
         marker.openPopup();
         if (center) {
@@ -940,6 +1004,10 @@
     fsmMaxEl.addEventListener("input", updateSchoolFilters);
     clearSchoolFiltersEl.addEventListener("click", clearSchoolFilters);
     map.fitBounds(bounds, { padding: [26, 26] });
+    const initialSelectedRank = selectedSchoolRankFromUrl();
+    if (initialSelectedRank) {
+      activate(initialSelectedRank, { center: true, updateUrl: false });
+    }
   </script>
 </body>
 </html>
