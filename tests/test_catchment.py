@@ -309,6 +309,18 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn("Copy link", html)
         self.assertIn("Direct link", html)
 
+    def test_popup_is_grouped_into_readable_sections(self):
+        html = build_map.build_map_html([self.sample_school()])
+
+        self.assertIn('class="popup-section popup-ranks"', html)
+        self.assertIn("<h4>Rankings</h4>", html)
+        self.assertIn("<h4>KS2 Results</h4>", html)
+        self.assertIn("<h4>Area & Admissions</h4>", html)
+        self.assertIn("<h4>Catchment</h4>", html)
+        self.assertIn('class="popup-table"', html)
+        self.assertIn('class="popup-metric-grid"', html)
+        self.assertIn('class="popup-address"', html)
+
     def test_school_deep_link_reopens_selected_school_on_load(self):
         html = build_map.build_map_html([self.sample_school()])
 

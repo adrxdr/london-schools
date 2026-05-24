@@ -1709,6 +1709,83 @@ def build_map_html(rows, ranked_count=None):
       margin: 0 0 6px;
       font-size: 1rem;
     }}
+    .popup-subtitle {{
+      margin: -2px 0 8px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.35;
+    }}
+    .popup-section {{
+      margin-top: 9px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }}
+    .popup-section h4 {{
+      margin: 0 0 6px;
+      color: var(--accent);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }}
+    .popup-metric-grid {{
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }}
+    .popup-metric {{
+      padding: 7px 8px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(255, 252, 246, 0.76);
+    }}
+    .popup-metric strong {{
+      display: block;
+      font-size: 0.88rem;
+      line-height: 1.1;
+    }}
+    .popup-metric span {{
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.68rem;
+      line-height: 1.1;
+    }}
+    .popup-table {{
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }}
+    .popup-table th,
+    .popup-table td {{
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(24, 33, 38, 0.08);
+      vertical-align: top;
+    }}
+    .popup-table th {{
+      width: 45%;
+      color: var(--muted);
+      font-weight: 650;
+      text-align: left;
+    }}
+    .popup-table td {{
+      color: var(--ink);
+      font-weight: 650;
+      text-align: right;
+    }}
+    .popup-section-note {{
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.35;
+    }}
+    .popup-address {{
+      margin-top: 8px;
+      padding-top: 7px;
+      border-top: 1px solid rgba(24, 33, 38, 0.08);
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.35;
+    }}
     .flag {{
       display: inline-flex;
       align-items: center;
@@ -2039,46 +2116,107 @@ def build_map_html(rows, ranked_count=None):
       const faithFlag = school.is_faith_school
         ? '<span class="flag flag-faith" title="Faith school">F</span>'
         : '<span class="flag flag-nonfaith" title="Non-faith school">N</span>';
-      const nonFaithRankLine = !school.is_faith_school && school.non_faith_rank
-        ? `<p><strong>Non-faith rank:</strong> #${{school.non_faith_rank}}</p>`
+      const nonFaithRankRow = !school.is_faith_school && school.non_faith_rank
+        ? `<tr><th>Non-faith rank</th><td>#${{school.non_faith_rank}}</td></tr>`
         : '';
       const faithTypeLabel = school.is_faith_school
         ? `Faith (${{school.religious_denomination}})`
         : 'Non-faith';
       const catchmentMatchLine = catchmentSearchState.active && school.contains_catchment_point
-        ? '<p><strong>This school catchment contains the selected map point.</strong></p>'
+        ? '<p class="popup-section-note"><strong>This school catchment contains the selected map point.</strong></p>'
         : '';
       const terraceCount = school.terrace_sales_count_2y_0_5mi || 0;
-      const terraceLine = terraceCount
-        ? `<p>Nearby terraced sold prices: median <strong>${{formatCurrency(school.terrace_median_price_2y_0_5mi)}}</strong>, average <strong>${{formatCurrency(school.terrace_avg_price_2y_0_5mi)}}</strong> <span class="minor">(${{terraceCount}} sales, 0.5 mi, last 2y)</span></p>`
-        : '<p>Nearby terraced sold prices: <strong>n/a</strong> <span class="minor">(no matching sales within 0.5 mi in the last 2y)</span></p>';
-      const familyAreaLine = Number.isFinite(school.family_area_rating)
-        ? `<p>Family area rating: <strong>${{school.family_area_rating.toFixed(1)}}/100</strong> <span class="minor">(safety ${{school.area_safety_percentile ?? "n/a"}}, lower deprivation ${{school.imd_lower_deprivation_percentile ?? "n/a"}}; IMD decile ${{school.imd_decile ?? "n/a"}}, local weighted crime ${{school.recent_family_crime_weighted_count_1mi ?? "n/a"}} in ${{school.recent_crime_month ?? "latest month"}})</span></p>`
-        : '<p>Family area rating: <strong>n/a</strong></p>';
+      const terraceRows = terraceCount
+        ? `
+            <tr><th>Median terrace</th><td>${{formatCurrency(school.terrace_median_price_2y_0_5mi)}}</td></tr>
+            <tr><th>Average terrace</th><td>${{formatCurrency(school.terrace_avg_price_2y_0_5mi)}}</td></tr>
+            <tr><th>Sales sample</th><td>${{terraceCount}} sales</td></tr>
+          `
+        : '<tr><th>Terraced sales</th><td>n/a</td></tr>';
+      const familyAreaText = Number.isFinite(school.family_area_rating)
+        ? `${{school.family_area_rating.toFixed(1)}}/100`
+        : 'n/a';
+      const safetyText = Number.isFinite(school.area_safety_percentile)
+        ? school.area_safety_percentile
+        : 'n/a';
+      const deprivationText = Number.isFinite(school.imd_lower_deprivation_percentile)
+        ? school.imd_lower_deprivation_percentile
+        : 'n/a';
+      const ptrText = school.pupils_per_teacher ? school.pupils_per_teacher.toFixed(1) : "n/a";
       const catchmentRadius = Number(school.catchment_radius_m);
       const catchmentLine = Number.isFinite(catchmentRadius) && catchmentRadius > 0
-        ? `<p>Catchment distance: <strong>${{catchmentRadius.toLocaleString()}} m</strong> <span class="minor">(${{school.catchment_note}}, ${{school.catchment_source_year}}; source: <a href="${{school.catchment_source_url}}" target="_blank" rel="noopener noreferrer">${{school.catchment_source_name}}</a>)</span></p>`
+        ? `
+            <table class="popup-table">
+              <tr><th>Catchment distance</th><td>${{catchmentRadius.toLocaleString()}} m</td></tr>
+              <tr><th>Published note</th><td>${{school.catchment_note}}</td></tr>
+              <tr><th>Year</th><td>${{school.catchment_source_year}}</td></tr>
+            </table>
+            <p class="popup-section-note">Source: <a href="${{school.catchment_source_url}}" target="_blank" rel="noopener noreferrer">${{school.catchment_source_name}}</a></p>
+          `
         : school.catchment_note
-          ? `<p>Catchment distance: <strong>No cut-off distance</strong> <span class="minor">(${{school.catchment_note}}, ${{school.catchment_source_year}}; source: <a href="${{school.catchment_source_url}}" target="_blank" rel="noopener noreferrer">${{school.catchment_source_name}}</a>)</span></p>`
-          : '<p>Catchment distance: <strong>n/a</strong> <span class="minor">(no latest source-backed distance loaded yet)</span></p>';
+          ? `
+              <table class="popup-table">
+                <tr><th>Catchment distance</th><td>No cut-off distance</td></tr>
+                <tr><th>Published note</th><td>${{school.catchment_note}}</td></tr>
+                <tr><th>Year</th><td>${{school.catchment_source_year}}</td></tr>
+              </table>
+              <p class="popup-section-note">Source: <a href="${{school.catchment_source_url}}" target="_blank" rel="noopener noreferrer">${{school.catchment_source_name}}</a></p>
+            `
+          : `
+              <table class="popup-table">
+                <tr><th>Catchment distance</th><td>n/a</td></tr>
+              </table>
+              <p class="popup-section-note">No latest source-backed distance loaded yet.</p>
+            `;
       return `
         <div class="popup">
           <h3>#${{school.rank}} ${{school.school_name}} ${{faithFlag}} ${{fsmFlag}} ${{ratioFlag}}</h3>
-          <p><strong>London rank:</strong> #${{school.rank}} · <strong>${{school.borough}} rank:</strong> #${{school.borough_rank}}</p>
-          ${{nonFaithRankLine}}
+          <p class="popup-subtitle">${{school.borough}} · ${{school.age_range}} · ${{faithTypeLabel}}</p>
           ${{catchmentMatchLine}}
-          <p>School type: <strong>${{faithTypeLabel}}</strong></p>
-          <p><strong>${{school.borough}}</strong> · ${{school.age_range}} · Eligible pupils: ${{school.eligible_pupils}}</p>
-          <p>Free school meals eligible: <strong>${{school.fsm_percent}}%</strong></p>
-          <p>Pupils per teacher: <strong>${{school.pupils_per_teacher ? school.pupils_per_teacher.toFixed(1) : "n/a"}}</strong> <span class="minor">(blue T = best 5% in London)</span></p>
-          ${{familyAreaLine}}
-          ${{catchmentLine}}
-          ${{terraceLine}}
-          <p>Composite: <strong>${{school.composite_score.toFixed(2)}}</strong></p>
-          <p>Expected standard (RWM): <strong>${{school.expected_rwm}}%</strong></p>
-          <p>Higher standard (RWM): <strong>${{school.higher_rwm}}%</strong></p>
-          <p>Scaled scores: Reading <strong>${{school.reading_score}}</strong>, Maths <strong>${{school.maths_score}}</strong>, GPS <strong>${{school.gps_score}}</strong></p>
-          <p class="minor">${{school.full_address}}</p>
+
+          <section class="popup-section popup-ranks">
+            <h4>Rankings</h4>
+            <div class="popup-metric-grid">
+              <div class="popup-metric"><strong>#${{school.rank}}</strong><span>London</span></div>
+              <div class="popup-metric"><strong>#${{school.borough_rank}}</strong><span>${{school.borough}}</span></div>
+              <div class="popup-metric"><strong>${{school.composite_score.toFixed(1)}}</strong><span>Composite</span></div>
+            </div>
+            <table class="popup-table">
+              ${{nonFaithRankRow}}
+              <tr><th>Eligible pupils</th><td>${{school.eligible_pupils}}</td></tr>
+              <tr><th>FSM eligible</th><td>${{school.fsm_percent}}%</td></tr>
+              <tr><th>Pupils / teacher</th><td>${{ptrText}}</td></tr>
+            </table>
+          </section>
+
+          <section class="popup-section">
+            <h4>KS2 Results</h4>
+            <table class="popup-table">
+              <tr><th>Expected RWM</th><td>${{school.expected_rwm}}%</td></tr>
+              <tr><th>Higher RWM</th><td>${{school.higher_rwm}}%</td></tr>
+              <tr><th>Reading score</th><td>${{school.reading_score}}</td></tr>
+              <tr><th>Maths score</th><td>${{school.maths_score}}</td></tr>
+              <tr><th>GPS score</th><td>${{school.gps_score}}</td></tr>
+            </table>
+          </section>
+
+          <section class="popup-section">
+            <h4>Area & Admissions</h4>
+            <table class="popup-table">
+              <tr><th>Family area rating</th><td>${{familyAreaText}}</td></tr>
+              <tr><th>Safety percentile</th><td>${{safetyText}}</td></tr>
+              <tr><th>Lower deprivation</th><td>${{deprivationText}}</td></tr>
+              ${{terraceRows}}
+            </table>
+            <p class="popup-section-note">Terraced sales use 0.5 miles and the last 2 years.</p>
+          </section>
+
+          <section class="popup-section">
+            <h4>Catchment</h4>
+            ${{catchmentLine}}
+          </section>
+
+          <p class="popup-address">${{school.full_address}}</p>
           <div class="share-row">
             <button type="button" onclick="copySchoolLink(${{school.rank}})">Copy link</button>
             <a href="${{shareUrl}}" target="_blank" rel="noopener noreferrer">Direct link</a>
