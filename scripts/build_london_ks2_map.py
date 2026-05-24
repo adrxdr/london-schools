@@ -1699,6 +1699,25 @@ def build_map_html(rows, ranked_count=None):
       padding: 5px 8px;
       font-size: 0.82rem;
     }}
+    .clear-catchment-button {{
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      z-index: 710;
+      width: auto;
+      min-height: 42px;
+      padding: 10px 14px;
+      border: 1px solid rgba(255, 248, 239, 0.72);
+      border-radius: 999px;
+      background: #c53a2f;
+      color: #fffdf8;
+      font-size: 0.86rem;
+      font-weight: 850;
+      box-shadow: 0 14px 34px rgba(197, 58, 47, 0.34);
+    }}
+    .clear-catchment-button.hidden {{
+      display: none;
+    }}
     .table-wrap {{
       border: 1px solid var(--border);
       border-radius: 16px;
@@ -2015,6 +2034,10 @@ def build_map_html(rows, ranked_count=None):
         max-height: none;
         margin: 10px;
       }}
+      .clear-catchment-button {{
+        right: 12px;
+        bottom: 12px;
+      }}
     }}
   </style>
 </head>
@@ -2061,7 +2084,6 @@ def build_map_html(rows, ranked_count=None):
       <div id="floatingFilters" class="filter-tool floating-filter-widget">
         <div class="filter-title">Filters</div>
         <div class="filter-title">Catchment point</div>
-        <button id="clearCatchmentSearch" class="secondary" type="button">Clear catchment point</button>
         <div id="catchmentSearchStatus" class="filter-status">Map clicks find source-backed catchment circles containing that point.</div>
         <div class="filter-note">Only schools with numeric catchment radii can be matched. ALL/no-radius entries remain visible as source-backed catchments, but cannot contain a point mathematically.</div>
         <div class="filter-title">Nearby terraced-house sold prices</div>
@@ -2107,6 +2129,7 @@ def build_map_html(rows, ranked_count=None):
         <button id="clearSchoolFilters" class="secondary" type="button">Clear school filters</button>
         <div id="schoolFilterStatus" class="filter-status">Showing non-faith schools at any free-school-meals level.</div>
       </div>
+      <button id="clearCatchmentSearch" class="clear-catchment-button hidden" type="button">Clear catchment point</button>
     </main>
   </div>
 
@@ -2161,6 +2184,7 @@ def build_map_html(rows, ranked_count=None):
 
     L.DomEvent.disableClickPropagation(filterToolEl);
     L.DomEvent.disableScrollPropagation(filterToolEl);
+    L.DomEvent.disableClickPropagation(clearCatchmentSearchEl);
 
     function markerColor(rank) {{
       const t = (rank - {min_rank}) / {rank_span};
@@ -2505,6 +2529,7 @@ def build_map_html(rows, ranked_count=None):
       }}
 
       drawCatchmentConnectorLines(origin);
+      clearCatchmentSearchEl.classList.remove("hidden");
       applyFilters();
     }}
 
@@ -2520,6 +2545,7 @@ def build_map_html(rows, ranked_count=None):
         catchmentSearchState.originMarker = null;
       }}
       clearCatchmentConnectorLines();
+      clearCatchmentSearchEl.classList.add("hidden");
       applyFilters();
     }}
 

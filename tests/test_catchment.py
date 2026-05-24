@@ -293,6 +293,17 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn("function stopMapClick(event)", html)
         self.assertIn("stopMapClick(event);", html)
 
+    def test_clear_catchment_button_floats_and_only_shows_when_point_selected(self):
+        html = build_map.build_map_html([self.sample_school()])
+
+        self.assertIn('id="clearCatchmentSearch" class="clear-catchment-button hidden"', html)
+        self.assertIn(".clear-catchment-button", html)
+        self.assertIn("bottom: 18px;", html)
+        self.assertIn("right: 18px;", html)
+        self.assertIn("background: #c53a2f;", html)
+        self.assertIn('clearCatchmentSearchEl.classList.remove("hidden");', html)
+        self.assertIn('clearCatchmentSearchEl.classList.add("hidden");', html)
+
     def test_map_click_draws_dotted_lines_to_matching_catchment_schools(self):
         html = build_map.build_map_html([self.sample_school()])
 
