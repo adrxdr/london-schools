@@ -2257,8 +2257,8 @@ def build_map_html(rows, ranked_count=None):
           <section class="popup-section">
             <h4>KS2 Results</h4>
             <table class="popup-table">
-              <tr><th>Expected RWM</th><td>${{school.expected_rwm}}%</td></tr>
-              <tr><th>Higher RWM</th><td>${{school.higher_rwm}}%</td></tr>
+              <tr><th>Achieving expected standard</th><td>${{school.expected_rwm}}%</td></tr>
+              <tr><th>Achieving higher standard</th><td>${{school.higher_rwm}}%</td></tr>
               <tr><th>Reading score</th><td>${{school.reading_score}}</td></tr>
               <tr><th>Maths score</th><td>${{school.maths_score}}</td></tr>
               <tr><th>GPS score</th><td>${{school.gps_score}}</td></tr>

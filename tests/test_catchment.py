@@ -317,6 +317,8 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn("<h4>KS2 Results</h4>", html)
         self.assertIn("<h4>Area & Admissions</h4>", html)
         self.assertIn("<h4>Catchment</h4>", html)
+        self.assertIn("Achieving expected standard", html)
+        self.assertIn("Achieving higher standard", html)
         self.assertIn('class="popup-table"', html)
         self.assertIn('class="popup-metric-grid"', html)
         self.assertIn('class="popup-address"', html)
