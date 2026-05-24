@@ -245,7 +245,7 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn("catchment_radius_m", html)
         self.assertIn("Catchment distance", html)
         self.assertIn("catchment-halo", html)
-        self.assertIn("school.catchment_note", html)
+        self.assertNotIn("Published note", html)
         self.assertIn('typeof overlay.setStyle === "function"', html)
         self.assertIn("radius: 13", html)
         self.assertIn('color: "#b8432f"', html)

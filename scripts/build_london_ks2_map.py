@@ -2267,7 +2267,6 @@ def build_map_html(rows, ranked_count=None):
         ? `
             <table class="popup-table">
               <tr><th>Catchment distance</th><td>${{catchmentRadius.toLocaleString()}} m</td></tr>
-              <tr><th>Published note</th><td>${{school.catchment_note}}</td></tr>
               <tr><th>Year</th><td>${{school.catchment_source_year}}</td></tr>
             </table>
             <p class="popup-section-note">Source: <a href="${{school.catchment_source_url}}" target="_blank" rel="noopener noreferrer">${{school.catchment_source_name}}</a></p>
@@ -2276,7 +2275,6 @@ def build_map_html(rows, ranked_count=None):
           ? `
               <table class="popup-table">
                 <tr><th>Catchment distance</th><td>No cut-off distance</td></tr>
-                <tr><th>Published note</th><td>${{school.catchment_note}}</td></tr>
                 <tr><th>Year</th><td>${{school.catchment_source_year}}</td></tr>
               </table>
               <p class="popup-section-note">Source: <a href="${{school.catchment_source_url}}" target="_blank" rel="noopener noreferrer">${{school.catchment_source_name}}</a></p>
