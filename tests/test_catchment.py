@@ -270,6 +270,19 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn("familyAreaMin: 50", html)
         self.assertIn("applyFilters();", html)
 
+    def test_filters_are_floating_and_default_to_non_faith(self):
+        html = build_map.build_map_html([self.sample_school()])
+
+        self.assertIn('class="filter-tool floating-filter-widget"', html)
+        self.assertIn(".floating-filter-widget", html)
+        self.assertIn("top: 16px;", html)
+        self.assertIn("right: 16px;", html)
+        self.assertIn('id="floatingFilters"', html)
+        self.assertIn('const filterToolEl = document.getElementById("floatingFilters");', html)
+        self.assertIn('value="nonfaith" selected>Non-faith schools only</option>', html)
+        self.assertIn('faith: "nonfaith"', html)
+        self.assertIn('Showing non-faith schools', html)
+
     def test_map_click_filters_to_schools_whose_catchment_contains_point(self):
         html = build_map.build_map_html([self.sample_school()])
 

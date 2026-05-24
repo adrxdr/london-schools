@@ -161,6 +161,42 @@
       font-size: 0.78rem;
       line-height: 1.35;
     }
+    .map-panel {
+      position: relative;
+      min-height: 100vh;
+    }
+    .floating-filter-widget {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 700;
+      width: min(360px, calc(100% - 32px));
+      max-height: calc(100vh - 32px);
+      margin: 0;
+      gap: 8px;
+      padding: 12px;
+      overflow: auto;
+      background: rgba(255, 252, 246, 0.94);
+      border-color: rgba(24, 33, 38, 0.16);
+      box-shadow: 0 22px 60px rgba(24, 33, 38, 0.22);
+    }
+    .floating-filter-widget .filter-title {
+      font-size: 0.86rem;
+    }
+    .floating-filter-widget .filter-status,
+    .floating-filter-widget .filter-note {
+      font-size: 0.72rem;
+    }
+    .floating-filter-widget label {
+      font-size: 0.72rem;
+    }
+    .floating-filter-widget select,
+    .floating-filter-widget input,
+    .floating-filter-widget button {
+      min-height: 30px;
+      padding: 5px 8px;
+      font-size: 0.82rem;
+    }
     .table-wrap {
       border: 1px solid var(--border);
       border-radius: 16px;
@@ -466,6 +502,17 @@
         min-height: 64vh;
         height: 64vh;
       }
+      .map-panel {
+        min-height: 64vh;
+      }
+      .floating-filter-widget {
+        position: sticky;
+        top: 10px;
+        right: auto;
+        width: calc(100% - 20px);
+        max-height: none;
+        margin: 10px;
+      }
     }
   </style>
 </head>
@@ -494,12 +541,28 @@
           <li><strong>Catchment circles:</strong> shown only where the latest official allocation source gives a distance or explicit no-distance outcome. Sources now include Barnet 2026, Brent 2026, Ealing 2026, Hackney 2026, Haringey 2025, Harrow 2026, Havering 2026, Newham 2026, Redbridge 2026, Sutton 2026, Tower Hamlets 2026, and Wandsworth 2026. Source-backed schools have an amber halo before you click. A green ALL badge means all applicants were offered or demand was met, so no cut-off radius was needed. No estimated catchment distances are used.</li>
         </ul>
       </div>
-      <div class="filter-tool">
-        <div class="filter-title">Find schools covering a map point</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>School</th>
+              <th>Comp.</th>
+            </tr>
+          </thead>
+          <tbody id="rankings"></tbody>
+        </table>
+      </div>
+    </aside>
+    <main class="map-panel">
+      <div id="map"></div>
+      <div id="floatingFilters" class="filter-tool floating-filter-widget">
+        <div class="filter-title">Filters</div>
+        <div class="filter-title">Catchment point</div>
         <button id="clearCatchmentSearch" class="secondary" type="button">Clear catchment point</button>
         <div id="catchmentSearchStatus" class="filter-status">Map clicks find source-backed catchment circles containing that point.</div>
         <div class="filter-note">Only schools with numeric catchment radii can be matched. ALL/no-radius entries remain visible as source-backed catchments, but cannot contain a point mathematically.</div>
-        <div class="filter-title">Filter by nearby terraced-house sold prices</div>
+        <div class="filter-title">Nearby terraced-house sold prices</div>
         <div class="filter-grid">
           <label>
             Max price
@@ -516,7 +579,7 @@
         <button id="clearPrice" class="secondary" type="button">Clear price filter</button>
         <div id="priceStatus" class="filter-status">Uses terraced sales within 0.5 miles in the last 2 years.</div>
         <div class="filter-note">Source: HM Land Registry Price Paid Data. Small samples can be lumpy, so each popup includes the sale count.</div>
-        <div class="filter-title">Filter by family area rating</div>
+        <div class="filter-title">Family area rating</div>
         <label>
           <span class="range-label"><span>Minimum family area rating</span><strong id="familyAreaMinValue">50</strong></span>
           <input id="familyAreaMin" type="range" min="0" max="100" step="1" value="50">
@@ -524,14 +587,14 @@
         <button id="clearFamilyArea" class="secondary" type="button">Clear area filter</button>
         <div id="familyAreaStatus" class="filter-status">Family area rating blends safety and lower deprivation, weighted equally.</div>
         <div class="filter-note">Safety uses recent data.police.uk street-level crimes within 1 mile. Deprivation uses the official English Index of Multiple Deprivation 2019 for the school postcode LSOA.</div>
-        <div class="filter-title">Filter by school type and free school meals (FSM)</div>
+        <div class="filter-title">School type and free school meals (FSM)</div>
         <div class="filter-grid">
           <label>
             Faith status
             <select id="faithFilter">
               <option value="all">Faith and non-faith</option>
               <option value="faith">Faith schools only</option>
-              <option value="nonfaith">Non-faith schools only</option>
+              <option value="nonfaith" selected>Non-faith schools only</option>
             </select>
           </label>
           <label>
@@ -540,22 +603,9 @@
           </label>
         </div>
         <button id="clearSchoolFilters" class="secondary" type="button">Clear school filters</button>
-        <div id="schoolFilterStatus" class="filter-status">Showing faith and non-faith schools at any free-school-meals level.</div>
+        <div id="schoolFilterStatus" class="filter-status">Showing non-faith schools at any free-school-meals level.</div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>School</th>
-              <th>Comp.</th>
-            </tr>
-          </thead>
-          <tbody id="rankings"></tbody>
-        </table>
-      </div>
-    </aside>
-    <main id="map"></main>
+    </main>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -568,6 +618,7 @@
     }).addTo(map);
 
     const rowsEl = document.getElementById("rankings");
+    const filterToolEl = document.getElementById("floatingFilters");
     const clearCatchmentSearchEl = document.getElementById("clearCatchmentSearch");
     const catchmentSearchStatusEl = document.getElementById("catchmentSearchStatus");
     const priceMaxEl = document.getElementById("priceMax");
@@ -601,10 +652,13 @@
       metric: "median"
     };
     const filterState = {
-      faith: "all",
+      faith: "nonfaith",
       fsmMax: 100,
       familyAreaMin: 50
     };
+
+    L.DomEvent.disableClickPropagation(filterToolEl);
+    L.DomEvent.disableScrollPropagation(filterToolEl);
 
     function markerColor(rank) {
       const t = (rank - 1) / 499;
