@@ -332,6 +332,13 @@ class CatchmentTests(unittest.TestCase):
         self.assertIn("/101011/honeywell-junior-school/primary", html)
         self.assertIn("DfE performance page", html)
 
+    def test_school_markers_show_rank_labels(self):
+        html = build_map.build_map_html([self.sample_school()])
+
+        self.assertIn("function schoolMarkerHtml(school)", html)
+        self.assertIn('class="school-rank-marker"', html)
+        self.assertIn("${school.rank}", html)
+
     def test_school_deep_link_reopens_selected_school_on_load(self):
         html = build_map.build_map_html([self.sample_school()])
 

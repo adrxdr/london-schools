@@ -1726,6 +1726,21 @@ def build_map_html(rows, ranked_count=None):
     .catchment-halo {{
       filter: drop-shadow(0 0 6px rgba(184, 67, 47, 0.48));
     }}
+    .school-rank-marker {{
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border: 2.5px solid #182126;
+      border-radius: 999px;
+      background: var(--marker-color);
+      color: #fffdf8;
+      font-size: 0.62rem;
+      font-weight: 850;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      box-shadow: 0 5px 14px rgba(24, 33, 38, 0.26);
+    }}
     .leaflet-popup-content-wrapper {{
       border-radius: 14px;
     }}
@@ -2099,6 +2114,10 @@ def build_map_html(rows, ranked_count=None):
       return `hsl(${{hue}}, 68%, 44%)`;
     }}
 
+    function schoolMarkerHtml(school) {{
+      return `<div class="school-rank-marker" style="--marker-color: ${{markerColor(school.rank)}}" title="#${{school.rank}} ${{school.school_name}}">${{school.rank}}</div>`;
+    }}
+
     function formatCurrency(value) {{
       if (!Number.isFinite(value)) return "n/a";
       if (value >= 1000000) return `£${{(value / 1000000).toFixed(value >= 10000000 ? 0 : 1)}}m`;
@@ -2286,10 +2305,14 @@ def build_map_html(rows, ranked_count=None):
     function setLayerDimmed(school, dimmed) {{
       const layers = schoolLayers.get(school.rank);
       if (!layers) return;
-      layers.marker.setStyle({{
-        opacity: dimmed ? 0.28 : 0.95,
-        fillOpacity: dimmed ? 0.18 : 0.92
-      }});
+      if (typeof layers.marker.setStyle === "function") {{
+        layers.marker.setStyle({{
+          opacity: dimmed ? 0.28 : 0.95,
+          fillOpacity: dimmed ? 0.18 : 0.92
+        }});
+      }} else if (typeof layers.marker.setOpacity === "function") {{
+        layers.marker.setOpacity(dimmed ? 0.28 : 1);
+      }}
       layers.overlays.forEach((overlay) => {{
         if (typeof overlay.setOpacity === "function") {{
           overlay.setOpacity(dimmed ? 0.22 : 1);
@@ -2558,13 +2581,16 @@ def build_map_html(rows, ranked_count=None):
       const faithFlag = school.is_faith_school
         ? '<span class="flag flag-faith" title="Faith school">F</span>'
         : '<span class="flag flag-nonfaith" title="Non-faith school">N</span>';
-      const marker = L.circleMarker([school.latitude, school.longitude], {{
-        radius: 7.5,
-        weight: 2.75,
-        color: "#182126",
-        opacity: 0.95,
-        fillColor: markerColor(school.rank),
-        fillOpacity: 0.92,
+      const markerIcon = L.divIcon({{
+        className: "",
+        html: schoolMarkerHtml(school),
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+        popupAnchor: [0, -14]
+      }});
+      const marker = L.marker([school.latitude, school.longitude], {{
+        icon: markerIcon,
+        keyboard: false,
         bubblingMouseEvents: false
       }});
       marker.bindPopup(() => popupHtml(school));
