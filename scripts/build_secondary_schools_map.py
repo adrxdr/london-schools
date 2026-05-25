@@ -132,6 +132,7 @@ LEAFLET_FALLBACK_CSS = """
       text-align: left;
     }
     .leaflet-popup-content {
+      width: min(520px, 82vw) !important;
       margin: 13px 19px;
       line-height: 1.4;
     }
@@ -470,8 +471,9 @@ def build_map_html(schools, notes):
       box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.24), 0 12px 28px rgba(15, 23, 42, 0.28);
     }}
     .popup {{
-      min-width: 270px;
-      max-width: 360px;
+      width: 100%;
+      min-width: 0;
+      max-width: none;
       color: #0f172a;
       font-size: 0.9rem;
     }}
@@ -490,6 +492,12 @@ def build_map_html(schools, notes):
     }}
     .metric span {{ display: block; color: #64748b; font-size: 0.68rem; font-weight: 900; text-transform: uppercase; }}
     .metric strong {{ font-size: 1rem; }}
+    .metric.primary {{
+      grid-column: 1 / -1;
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }}
+    .metric.primary strong {{ font-size: 1.45rem; }}
     .popup table {{
       width: 100%;
       border-collapse: collapse;
@@ -621,10 +629,10 @@ def build_map_html(schools, notes):
           <h2>#${{school.rank}} ${{escapeHtml(school.school)}}</h2>
           <div>${{escapeHtml(school.borough)}} · ${{escapeHtml(school.postcode)}} · ${{escapeHtml(school.state_private)}} · ${{escapeHtml(school.coed_status)}}</div>
           <div class="popup-grid">
-            <div class="metric"><span>APS per entry</span><strong>${{school.aps.toFixed(2)}}</strong></div>
-            <div class="metric"><span>Oxbridge rate</span><strong>${{escapeHtml(school.oxbridge_offer_rate)}}</strong></div>
-            <div class="metric"><span>Applications</span><strong>${{escapeHtml(school.oxbridge_applications)}}</strong></div>
-            <div class="metric"><span>Offers</span><strong>${{escapeHtml(school.oxbridge_offers)}}</strong></div>
+            <div class="metric primary"><span>A-level points per entry (DfE 2024)</span><strong>${{school.aps.toFixed(2)}}</strong></div>
+            <div class="metric"><span>Oxbridge offer rate 2022-2024</span><strong>${{escapeHtml(school.oxbridge_offer_rate)}}</strong></div>
+            <div class="metric"><span>Oxbridge applications 2022-2024</span><strong>${{escapeHtml(school.oxbridge_applications)}}</strong></div>
+            <div class="metric"><span>Oxbridge offers 2022-2024</span><strong>${{escapeHtml(school.oxbridge_offers)}}</strong></div>
           </div>
           <table>
             <tr><th>Type</th><td>${{escapeHtml(school.school_type)}}</td></tr>
