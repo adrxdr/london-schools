@@ -50,6 +50,7 @@ Notes: These are sample notes with `code`.
         self.assertIn('currentSort = { column: "APS per A level entry"', output)
         self.assertIn('type="application/json"', output)
         self.assertIn('href="https://example.test/map"', output)
+        self.assertIn('href="london-secondary-schools/"', output)
         self.assertIn('href="london-secondary-schools.md"', output)
 
     def test_interactive_table_is_written_separately_from_markdown(self):

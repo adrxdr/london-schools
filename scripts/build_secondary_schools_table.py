@@ -174,7 +174,7 @@ def build_interactive_body(headers, rows, notes):
     return f"""<div class="secondary-report-header">
   <h1>{html.escape(TITLE)}</h1>
   <p class="source">{markdown_inline_to_html(SOURCE)}</p>
-  <p><a href="london-secondary-schools.md">View the static Markdown table</a></p>
+  <p><a href="london-secondary-schools/">View the map</a> · <a href="london-secondary-schools.md">View the static Markdown table</a></p>
 </div>
 
 <style>
