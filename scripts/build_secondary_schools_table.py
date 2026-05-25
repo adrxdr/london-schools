@@ -148,6 +148,7 @@ def render_table(headers, rows):
             f'data-borough="{html.escape(row.get("Area / borough / town", ""), quote=True)}" '
             f'data-phase="{html.escape(row.get("Phase", ""), quote=True)}" '
             f'data-school-type="{html.escape(row.get("School type", ""), quote=True)}" '
+            f'data-coed="{html.escape(row.get("Co-ed status", ""), quote=True)}" '
             f'data-selectivity="{html.escape(row.get("Selectivity", ""), quote=True)}" '
             f'data-aps="{numeric_value(row.get("APS per A level entry", ""))}">'
         )
@@ -298,6 +299,11 @@ def build_interactive_body(headers, rows, notes):
         {render_options(rows, "State/private")}
       </select>
     </label>
+    <label>Co-ed status
+      <select id="secondaryCoedFilter">
+        {render_options(rows, "Co-ed status")}
+      </select>
+    </label>
     <label>Borough / area
       <select id="secondaryBoroughFilter">
         {render_options(rows, "Area / borough / town")}
@@ -355,6 +361,7 @@ def build_interactive_body(headers, rows, notes):
   const filters = {{
     search: document.getElementById("secondarySearch"),
     state: document.getElementById("secondaryStateFilter"),
+    coed: document.getElementById("secondaryCoedFilter"),
     borough: document.getElementById("secondaryBoroughFilter"),
     phase: document.getElementById("secondaryPhaseFilter"),
     type: document.getElementById("secondaryTypeFilter"),
@@ -388,6 +395,7 @@ def build_interactive_body(headers, rows, notes):
     const minAps = Number(filters.minAps.value);
     return (!query || row.dataset.search.includes(query)) &&
       (!filters.state.value || row.dataset.state === filters.state.value) &&
+      (!filters.coed.value || row.dataset.coed === filters.coed.value) &&
       (!filters.borough.value || row.dataset.borough === filters.borough.value) &&
       (!filters.phase.value || row.dataset.phase === filters.phase.value) &&
       (!filters.type.value || row.dataset.schoolType === filters.type.value) &&
