@@ -161,6 +161,7 @@ def build_map_html(schools, notes):
       min-height: 100vh;
       color: var(--ink);
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
       background:
         radial-gradient(circle at 15% 15%, rgba(96, 165, 250, 0.28), transparent 30rem),
         radial-gradient(circle at 84% 12%, rgba(251, 146, 60, 0.24), transparent 28rem),
@@ -169,7 +170,8 @@ def build_map_html(schools, notes):
     .layout {{
       display: grid;
       grid-template-columns: minmax(340px, 430px) 1fr;
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
     }}
     .sidebar {{
       position: relative;
@@ -301,7 +303,7 @@ def build_map_html(schools, notes):
     }}
     .school-row strong {{ display: block; font-size: 0.9rem; line-height: 1.2; }}
     .school-row small {{ color: var(--muted); font-weight: 750; line-height: 1.35; }}
-    #map {{ min-height: 100vh; z-index: 1; }}
+    #map {{ height: 100vh; z-index: 1; }}
     .secondary-rank-marker {{
       display: grid;
       place-items: center;
@@ -352,9 +354,11 @@ def build_map_html(schools, notes):
     }}
     .popup th {{ width: 40%; color: #64748b; font-size: 0.72rem; text-transform: uppercase; }}
     @media (max-width: 900px) {{
+      body {{ overflow: auto; }}
       .layout {{ grid-template-columns: 1fr; }}
+      .layout {{ height: auto; overflow: visible; }}
       .sidebar {{ max-height: 54vh; border-right: 0; border-bottom: 1px solid var(--line); }}
-      #map {{ min-height: 46vh; }}
+      #map {{ min-height: 46vh; height: 46vh; }}
     }}
   </style>
 </head>
