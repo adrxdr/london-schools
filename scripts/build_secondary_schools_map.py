@@ -132,8 +132,8 @@ LEAFLET_FALLBACK_CSS = """
       text-align: left;
     }
     .leaflet-popup-content {
-      width: min(520px, 82vw) !important;
-      margin: 13px 19px;
+      width: min(560px, 84vw) !important;
+      margin: 0;
       line-height: 1.4;
     }
     .leaflet-popup-tip-container {
@@ -477,39 +477,118 @@ def build_map_html(schools, notes):
       color: #0f172a;
       font-size: 0.9rem;
     }}
-    .popup h2 {{ margin: 0 0 0.45rem; font-size: 1.05rem; }}
+    .popup-inner {{
+      display: grid;
+      gap: 0.9rem;
+      padding: 1.1rem 1.25rem 1.2rem;
+    }}
+    .popup-header {{
+      display: grid;
+      gap: 0.5rem;
+      padding-right: 1.1rem;
+    }}
+    .popup h2 {{
+      margin: 0;
+      font-size: 1.2rem;
+      line-height: 1.16;
+      letter-spacing: -0.025em;
+    }}
+    .popup-meta {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }}
+    .popup-meta span {{
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #dbe3ef;
+      border-radius: 999px;
+      padding: 0.28rem 0.5rem;
+      background: #f8fafc;
+      color: #475569;
+      font-size: 0.72rem;
+      font-weight: 850;
+    }}
     .popup-grid {{
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.45rem;
-      margin: 0.65rem 0;
+      gap: 0.65rem;
     }}
     .metric {{
-      padding: 0.55rem;
+      padding: 0.75rem;
       border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      background: #f8fafc;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
     }}
-    .metric span {{ display: block; color: #64748b; font-size: 0.68rem; font-weight: 900; text-transform: uppercase; }}
-    .metric strong {{ font-size: 1rem; }}
+    .metric span {{
+      display: block;
+      margin-bottom: 0.22rem;
+      color: #64748b;
+      font-size: 0.68rem;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }}
+    .metric strong {{ font-size: 1.08rem; }}
     .metric.primary {{
       grid-column: 1 / -1;
-      background: #eff6ff;
+      background: linear-gradient(135deg, #eff6ff 0%, #f8fbff 100%);
       border-color: #bfdbfe;
     }}
     .metric.primary strong {{ font-size: 1.45rem; }}
+    .popup-section-title {{
+      margin: 0 0 0.35rem;
+      color: #64748b;
+      font-size: 0.7rem;
+      font-weight: 950;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }}
     .popup table {{
       width: 100%;
-      border-collapse: collapse;
-      margin-top: 0.55rem;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      background: #fff;
     }}
     .popup th, .popup td {{
-      padding: 0.32rem 0;
-      border-top: 1px solid #e2e8f0;
+      padding: 0.55rem 0.7rem;
+      border-top: 1px solid #edf2f7;
       text-align: left;
       vertical-align: top;
     }}
-    .popup th {{ width: 40%; color: #64748b; font-size: 0.72rem; text-transform: uppercase; }}
+    .popup tr:first-child th,
+    .popup tr:first-child td {{ border-top: 0; }}
+    .popup th {{
+      width: 34%;
+      background: #f8fafc;
+      color: #64748b;
+      font-size: 0.7rem;
+      font-weight: 950;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }}
+    .popup td {{ color: #1e293b; }}
+    .popup-actions {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      padding-top: 0.1rem;
+    }}
+    .popup-actions a {{
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #bfdbfe;
+      border-radius: 999px;
+      padding: 0.45rem 0.65rem;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-size: 0.8rem;
+      font-weight: 900;
+    }}
     @media (max-width: 900px) {{
       body {{ overflow: auto; }}
       .layout {{ grid-template-columns: 1fr; }}
@@ -626,23 +705,41 @@ def build_map_html(schools, notes):
     function popupHtml(school) {{
       return `
         <div class="popup">
-          <h2>#${{school.rank}} ${{escapeHtml(school.school)}}</h2>
-          <div>${{escapeHtml(school.borough)}} · ${{escapeHtml(school.postcode)}} · ${{escapeHtml(school.state_private)}} · ${{escapeHtml(school.coed_status)}}</div>
-          <div class="popup-grid">
-            <div class="metric primary"><span>A-level points per entry (DfE 2024)</span><strong>${{school.aps.toFixed(2)}}</strong></div>
-            <div class="metric"><span>Oxbridge offer rate 2022-2024</span><strong>${{escapeHtml(school.oxbridge_offer_rate)}}</strong></div>
-            <div class="metric"><span>Oxbridge applications 2022-2024</span><strong>${{escapeHtml(school.oxbridge_applications)}}</strong></div>
-            <div class="metric"><span>Oxbridge offers 2022-2024</span><strong>${{escapeHtml(school.oxbridge_offers)}}</strong></div>
+          <div class="popup-inner">
+            <div class="popup-header">
+              <h2>#${{school.rank}} ${{escapeHtml(school.school)}}</h2>
+              <div class="popup-meta">
+                <span>${{escapeHtml(school.borough)}}</span>
+                <span>${{escapeHtml(school.postcode)}}</span>
+                <span>${{escapeHtml(school.state_private)}}</span>
+                <span>${{escapeHtml(school.coed_status)}}</span>
+              </div>
+            </div>
+            <div>
+              <p class="popup-section-title">A-level and Oxbridge signals</p>
+              <div class="popup-grid">
+                <div class="metric primary"><span>A-level points per entry (DfE 2024)</span><strong>${{school.aps.toFixed(2)}}</strong></div>
+                <div class="metric"><span>Oxbridge offer rate 2022-2024</span><strong>${{escapeHtml(school.oxbridge_offer_rate)}}</strong></div>
+                <div class="metric"><span>Oxbridge applications 2022-2024</span><strong>${{escapeHtml(school.oxbridge_applications)}}</strong></div>
+                <div class="metric"><span>Oxbridge offers 2022-2024</span><strong>${{escapeHtml(school.oxbridge_offers)}}</strong></div>
+              </div>
+            </div>
+            <div>
+              <p class="popup-section-title">School profile</p>
+              <table>
+                <tr><th>Type</th><td>${{escapeHtml(school.school_type)}}</td></tr>
+                <tr><th>Selectivity</th><td>${{escapeHtml(school.selectivity)}}</td></tr>
+                <tr><th>Fees</th><td>${{escapeHtml(school.fees)}}</td></tr>
+                <tr><th>Phase</th><td>${{escapeHtml(school.phase)}}</td></tr>
+                <tr><th>16+ hurdle</th><td>${{escapeHtml(school.further_selection)}}</td></tr>
+                <tr><th>GCSE cut-off</th><td>${{escapeHtml(school.gcse_cutoff)}}</td></tr>
+              </table>
+            </div>
+            <div class="popup-actions">
+              <a href="${{school.google_maps_url}}" target="_blank" rel="noopener noreferrer">Open in Google Maps</a>
+              <a href="../london-secondary-schools.html">Sortable table</a>
+            </div>
           </div>
-          <table>
-            <tr><th>Type</th><td>${{escapeHtml(school.school_type)}}</td></tr>
-            <tr><th>Selectivity</th><td>${{escapeHtml(school.selectivity)}}</td></tr>
-            <tr><th>Fees</th><td>${{escapeHtml(school.fees)}}</td></tr>
-            <tr><th>Phase</th><td>${{escapeHtml(school.phase)}}</td></tr>
-            <tr><th>16+ hurdle</th><td>${{escapeHtml(school.further_selection)}}</td></tr>
-            <tr><th>GCSE cut-off</th><td>${{escapeHtml(school.gcse_cutoff)}}</td></tr>
-          </table>
-          <p><a href="${{school.google_maps_url}}" target="_blank" rel="noopener noreferrer">Open in Google Maps</a> · <a href="../london-secondary-schools.html">Sortable table</a></p>
         </div>
       `;
     }}
