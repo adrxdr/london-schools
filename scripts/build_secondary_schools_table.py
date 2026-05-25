@@ -14,8 +14,9 @@ TITLE = "London schools within 10 miles, reranked by 2025 A-level APS"
 SOURCE = (
     "Source metric: DfE 2024/25 final institution-level `aps_per_entry` for cohort "
     "`A level`, disadvantage status `Total`, used for the current ranking. The previous "
-    "DfE 2023/24 A-level APS is retained for comparison. Original distance filter: <=10 "
-    "miles from central London using full postcode coordinates."
+    "DfE 2023/24 A-level APS is retained for comparison. A-level cohort size uses the "
+    "DfE 2024/25 `aps_per_entry_student_count` for the matched institution. Original "
+    "distance filter: <=10 miles from central London using full postcode coordinates."
 )
 DEFAULT_NOTES = (
     "Private-school fees are approximate annual senior/sixth-form fees, rounded from current "
@@ -125,6 +126,7 @@ def render_table(headers, rows):
     numeric_columns = {
         "APS per A level entry",
         "2024 APS per A level entry",
+        "A-level cohort size (DfE 2025)",
         "Oxbridge applications (2022-2024)",
         "Oxbridge offers (2022-2024)",
         "Oxbridge offer rate",

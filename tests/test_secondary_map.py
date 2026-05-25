@@ -17,6 +17,7 @@ class SecondaryMapTests(unittest.TestCase):
             "School": "Example Academy",
             "APS per A level entry": "49.2",
             "2024 APS per A level entry": "48.5",
+            "A-level cohort size (DfE 2025)": "120",
             "Oxbridge applications (2022-2024)": "30",
             "Oxbridge offers (2022-2024)": "10",
             "Oxbridge offer rate": "33%",
@@ -47,6 +48,9 @@ class SecondaryMapTests(unittest.TestCase):
         self.assertEqual(schools[0]["school"], "Example Academy")
         self.assertEqual(schools[0]["aps"], 49.2)
         self.assertEqual(schools[0]["aps_2024"], "48.5")
+        self.assertEqual(schools[0]["alevel_cohort_size_numeric"], 120.0)
+        self.assertEqual(schools[0]["oxbridge_offers_numeric"], 10.0)
+        self.assertAlmostEqual(schools[0]["oxbridge_application_share"], 8.3333333333)
         self.assertEqual(schools[0]["coed_status"], "Co-ed")
         self.assertEqual(schools[0]["latitude"], 51.54)
 
@@ -66,6 +70,9 @@ class SecondaryMapTests(unittest.TestCase):
         self.assertIn("A-level points per entry (DfE 2025)", output)
         self.assertIn("Previous A-level points per entry (DfE 2024)", output)
         self.assertIn("Oxbridge applications 2022-2024", output)
+        self.assertIn('id="minOxbridgeOffers"', output)
+        self.assertIn("A-level cohort size (DfE 2025)", output)
+        self.assertIn("Approx annual Oxbridge apps / cohort", output)
         self.assertIn("popup-inner", output)
         self.assertIn("A-level and Oxbridge signals", output)
         self.assertIn("School profile", output)

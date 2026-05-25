@@ -243,6 +243,19 @@ def prepare_schools(rows, locations):
         aps_2025_numeric = numeric_value(aps_2025_raw)
         aps_2024_raw = row.get("2024 APS per A level entry", "")
         aps_2024_numeric = numeric_value(aps_2024_raw)
+        cohort_raw = row.get("A-level cohort size (DfE 2025)", "")
+        cohort_numeric = numeric_value(cohort_raw)
+        oxbridge_applications_raw = row.get("Oxbridge applications (2022-2024)", "")
+        oxbridge_applications_numeric = numeric_value(oxbridge_applications_raw)
+        oxbridge_offers_raw = row.get("Oxbridge offers (2022-2024)", "")
+        oxbridge_offers_numeric = numeric_value(oxbridge_offers_raw)
+        cohort_size = float(cohort_numeric) if cohort_numeric else None
+        application_count = float(oxbridge_applications_numeric) if oxbridge_applications_numeric else None
+        annual_application_share = (
+            (application_count / 3 / cohort_size) * 100
+            if application_count is not None and cohort_size
+            else None
+        )
         schools.append(
             {
                 "rank": rank,
@@ -251,8 +264,13 @@ def prepare_schools(rows, locations):
                 "aps_2025": aps_2025_raw,
                 "aps_2024": aps_2024_raw,
                 "aps_2024_numeric": float(aps_2024_numeric) if aps_2024_numeric else None,
-                "oxbridge_applications": row.get("Oxbridge applications (2022-2024)", ""),
-                "oxbridge_offers": row.get("Oxbridge offers (2022-2024)", ""),
+                "alevel_cohort_size": cohort_raw,
+                "alevel_cohort_size_numeric": cohort_size,
+                "oxbridge_applications": oxbridge_applications_raw,
+                "oxbridge_applications_numeric": application_count,
+                "oxbridge_application_share": annual_application_share,
+                "oxbridge_offers": oxbridge_offers_raw,
+                "oxbridge_offers_numeric": float(oxbridge_offers_numeric) if oxbridge_offers_numeric else None,
                 "oxbridge_offer_rate": row.get("Oxbridge offer rate", ""),
                 "borough": row.get("Area / borough / town", ""),
                 "postcode_district": row.get("Postcode district", ""),
@@ -615,7 +633,7 @@ def build_map_html(schools, notes):
         <p class="eyebrow">Secondary schools</p>
         <h1>A-level map</h1>
       </div>
-      <p class="subhead">Existing London secondary cohort reranked by DfE 2024/25 A-level APS per entry. The previous 2023/24 APS is retained in each popup for comparison. Postcode-level locations are approximate.</p>
+      <p class="subhead">Existing London secondary cohort reranked by DfE 2024/25 A-level APS per entry. The previous 2023/24 APS and DfE 2025 A-level cohort size are retained in each popup for comparison. Postcode-level locations are approximate.</p>
       <p class="subhead"><a href="../london-secondary-schools.html">Open sortable table</a> · <a href="../london-secondary-schools.md">Static Markdown</a> · <a href="../">Primary map</a></p>
       <div class="meta">
         <div class="card"><strong>{len(schools)}</strong><span>Schools mapped</span></div>
@@ -643,6 +661,9 @@ def build_map_html(schools, notes):
         </label>
         <label>Minimum APS
           <input id="minAps" type="number" min="0" step="0.1" placeholder="e.g. 45">
+        </label>
+        <label>Minimum Oxbridge offers
+          <input id="minOxbridgeOffers" type="number" min="0" step="1" placeholder="e.g. 20">
         </label>
         <label>Rows
           <select id="rowLimit">
@@ -685,6 +706,7 @@ def build_map_html(schools, notes):
       type: document.getElementById("typeFilter"),
       selectivity: document.getElementById("selectivityFilter"),
       minAps: document.getElementById("minAps"),
+      minOxbridgeOffers: document.getElementById("minOxbridgeOffers"),
       limit: document.getElementById("rowLimit")
     }};
     const summary = document.getElementById("summary");
@@ -716,6 +738,20 @@ def build_map_html(schools, notes):
       return Number.isFinite(value) ? value.toFixed(2) : "N/A";
     }}
 
+    function formatCount(value) {{
+      return Number.isFinite(value) ? value.toLocaleString() : "N/A";
+    }}
+
+    function formatPercent(value) {{
+      return Number.isFinite(value) ? `${{value.toFixed(0)}}%` : "N/A";
+    }}
+
+    function optionalNumber(input) {{
+      if (!input.value.trim()) return null;
+      const value = Number(input.value);
+      return Number.isFinite(value) ? value : null;
+    }}
+
     function popupHtml(school) {{
       return `
         <div class="popup">
@@ -737,6 +773,8 @@ def build_map_html(schools, notes):
                 <div class="metric"><span>Oxbridge offer rate 2022-2024</span><strong>${{escapeHtml(school.oxbridge_offer_rate)}}</strong></div>
                 <div class="metric"><span>Oxbridge applications 2022-2024</span><strong>${{escapeHtml(school.oxbridge_applications)}}</strong></div>
                 <div class="metric"><span>Oxbridge offers 2022-2024</span><strong>${{escapeHtml(school.oxbridge_offers)}}</strong></div>
+                <div class="metric"><span>A-level cohort size (DfE 2025)</span><strong>${{formatCount(school.alevel_cohort_size_numeric)}}</strong></div>
+                <div class="metric"><span>Approx annual Oxbridge apps / cohort</span><strong>${{formatPercent(school.oxbridge_application_share)}}</strong></div>
               </div>
             </div>
             <div>
@@ -770,14 +808,16 @@ def build_map_html(schools, notes):
         school.selectivity,
         school.phase
       ].join(" ").toLowerCase();
-      const minAps = Number(controls.minAps.value);
+      const minAps = optionalNumber(controls.minAps);
+      const minOxbridgeOffers = optionalNumber(controls.minOxbridgeOffers);
       return (!query || haystack.includes(query)) &&
         (!controls.state.value || school.state_private === controls.state.value) &&
         (!controls.coed.value || school.coed_status === controls.coed.value) &&
         (!controls.borough.value || school.borough === controls.borough.value) &&
         (!controls.type.value || school.school_type === controls.type.value) &&
         (!controls.selectivity.value || school.selectivity === controls.selectivity.value) &&
-        (!Number.isFinite(minAps) || (Number.isFinite(school.aps) && school.aps >= minAps));
+        (minAps === null || (Number.isFinite(school.aps) && school.aps >= minAps)) &&
+        (minOxbridgeOffers === null || (Number.isFinite(school.oxbridge_offers_numeric) && school.oxbridge_offers_numeric >= minOxbridgeOffers));
     }}
 
     function visibleSchools() {{
