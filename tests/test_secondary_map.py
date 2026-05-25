@@ -59,6 +59,8 @@ class SecondaryMapTests(unittest.TestCase):
         self.assertIn('id="map"', output)
         self.assertIn('id="coedFilter"', output)
         self.assertIn("secondary-rank-marker", output)
+        self.assertIn(".leaflet-tile,", output)
+        self.assertIn("position: absolute;", output)
         self.assertIn("#map { height: 100vh;", output)
         self.assertIn("#map { min-height: 46vh; height: 46vh; }", output)
         self.assertIn("L.map", output)

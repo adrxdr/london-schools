@@ -20,6 +20,154 @@ from build_secondary_schools_table import extract_table, markdown_links_to_html,
 
 TITLE = "London Secondary Schools Map"
 POSTCODE_PATTERN = re.compile(r"\b[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\b", re.I)
+LEAFLET_FALLBACK_CSS = """
+    .leaflet-pane,
+    .leaflet-tile,
+    .leaflet-marker-icon,
+    .leaflet-marker-shadow,
+    .leaflet-tile-container,
+    .leaflet-pane > svg,
+    .leaflet-pane > canvas,
+    .leaflet-zoom-box,
+    .leaflet-image-layer,
+    .leaflet-layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    .leaflet-container {
+      overflow: hidden;
+      touch-action: pan-x pan-y;
+      font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+      background: #ddd;
+      outline-offset: 1px;
+    }
+    .leaflet-tile,
+    .leaflet-marker-icon,
+    .leaflet-marker-shadow {
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .leaflet-tile {
+      filter: inherit;
+      visibility: hidden;
+    }
+    .leaflet-tile-loaded {
+      visibility: inherit;
+    }
+    .leaflet-map-pane,
+    .leaflet-tile,
+    .leaflet-marker-icon,
+    .leaflet-marker-shadow,
+    .leaflet-tile-container,
+    .leaflet-pane > svg,
+    .leaflet-pane > canvas {
+      z-index: auto;
+    }
+    .leaflet-pane { z-index: 400; }
+    .leaflet-tile-pane { z-index: 200; }
+    .leaflet-overlay-pane { z-index: 400; }
+    .leaflet-shadow-pane { z-index: 500; }
+    .leaflet-marker-pane { z-index: 600; }
+    .leaflet-tooltip-pane { z-index: 650; }
+    .leaflet-popup-pane { z-index: 700; }
+    .leaflet-control {
+      position: relative;
+      z-index: 800;
+      pointer-events: visiblePainted;
+      pointer-events: auto;
+    }
+    .leaflet-top,
+    .leaflet-bottom {
+      position: absolute;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    .leaflet-top { top: 0; }
+    .leaflet-right { right: 0; }
+    .leaflet-bottom { bottom: 0; }
+    .leaflet-left { left: 0; }
+    .leaflet-control { float: left; clear: both; }
+    .leaflet-right .leaflet-control { float: right; }
+    .leaflet-top .leaflet-control { margin-top: 10px; }
+    .leaflet-bottom .leaflet-control { margin-bottom: 10px; }
+    .leaflet-left .leaflet-control { margin-left: 10px; }
+    .leaflet-right .leaflet-control { margin-right: 10px; }
+    .leaflet-control-zoom a {
+      display: block;
+      width: 26px;
+      height: 26px;
+      border-bottom: 1px solid #ccc;
+      background: #fff;
+      color: #000;
+      text-align: center;
+      text-decoration: none;
+      line-height: 26px;
+    }
+    .leaflet-control-zoom a:first-child {
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+    }
+    .leaflet-control-zoom a:last-child {
+      border-bottom: 0;
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+    .leaflet-control-attribution {
+      padding: 0 5px;
+      background: rgba(255, 255, 255, 0.8);
+      color: #333;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .leaflet-popup {
+      position: absolute;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .leaflet-popup-content-wrapper {
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 3px 14px rgba(0, 0, 0, 0.28);
+      text-align: left;
+    }
+    .leaflet-popup-content {
+      margin: 13px 19px;
+      line-height: 1.4;
+    }
+    .leaflet-popup-tip-container {
+      position: absolute;
+      left: 50%;
+      width: 40px;
+      height: 20px;
+      margin-left: -20px;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .leaflet-popup-tip {
+      width: 17px;
+      height: 17px;
+      margin: -10px auto 0;
+      padding: 1px;
+      transform: rotate(45deg);
+      background: #fff;
+      box-shadow: 0 3px 14px rgba(0, 0, 0, 0.28);
+    }
+    .leaflet-popup-close-button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      border: 0;
+      padding: 4px 4px 0 0;
+      width: 18px;
+      height: 14px;
+      color: #757575;
+      text-align: center;
+      text-decoration: none;
+      font: 16px/14px Tahoma, Verdana, sans-serif;
+      background: transparent;
+    }
+"""
 
 
 def extract_map_url(value):
@@ -144,6 +292,7 @@ def build_map_html(schools, notes):
   <title>{html.escape(TITLE)}</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ/gkA9/MK1CTQ4GjJkL6EOd3b3tR/4=" crossorigin="">
   <style>
+{LEAFLET_FALLBACK_CSS}
     :root {{
       --ink: #0f172a;
       --muted: #64748b;
