@@ -512,35 +512,35 @@ def build_map_html(schools, notes):
     .popup-grid {{
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.65rem;
+      gap: 0.42rem;
     }}
     .metric {{
-      padding: 0.75rem;
+      padding: 0.5rem 0.6rem;
       border: 1px solid #e2e8f0;
-      border-radius: 16px;
+      border-radius: 12px;
       background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
     }}
     .metric span {{
       display: block;
-      margin-bottom: 0.22rem;
+      margin-bottom: 0.12rem;
       color: #64748b;
-      font-size: 0.68rem;
+      font-size: 0.58rem;
       font-weight: 900;
       letter-spacing: 0.02em;
       line-height: 1.25;
       text-transform: uppercase;
     }}
-    .metric strong {{ font-size: 1.08rem; }}
+    .metric strong {{ font-size: 0.98rem; }}
     .metric.primary {{
       grid-column: 1 / -1;
       background: linear-gradient(135deg, #eff6ff 0%, #f8fbff 100%);
       border-color: #bfdbfe;
     }}
-    .metric.primary strong {{ font-size: 1.45rem; }}
+    .metric.primary strong {{ font-size: 1.18rem; }}
     .popup-section-title {{
-      margin: 0 0 0.35rem;
+      margin: 0 0 0.24rem;
       color: #64748b;
-      font-size: 0.7rem;
+      font-size: 0.64rem;
       font-weight: 950;
       letter-spacing: 0.08em;
       text-transform: uppercase;
