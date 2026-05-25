@@ -30,7 +30,6 @@ class SecondaryMapTests(unittest.TestCase):
             "Approx annual fees": "N/A",
             "Selectivity": "comprehensive/non-selective",
             "Further exam/selection after joining?": "No extra academic exam noted",
-            "GCSE cut-off for sixth form?": "Yes",
             "Phase": "secondary-only",
             "Google Maps": "[Map](https://www.google.com/maps/search/?api=1&query=Example+Academy+E8+1AA)",
         }
@@ -79,6 +78,7 @@ class SecondaryMapTests(unittest.TestCase):
         self.assertIn("popup-inner", output)
         self.assertIn("A-level and Oxbridge signals", output)
         self.assertIn("School profile", output)
+        self.assertNotIn("GCSE cut-off", output)
         self.assertIn("<th>Focus</th>", output)
         self.assertIn("STEM / maths", output)
         self.assertIn("gap: 0.42rem", output)

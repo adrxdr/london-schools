@@ -282,7 +282,6 @@ def prepare_schools(rows, locations):
                 "fees": row.get("Approx annual fees", ""),
                 "selectivity": row.get("Selectivity", ""),
                 "further_selection": row.get("Further exam/selection after joining?", ""),
-                "gcse_cutoff": row.get("GCSE cut-off for sixth form?", ""),
                 "phase": row.get("Phase", ""),
                 "google_maps_url": extract_map_url(row.get("Google Maps", "")),
                 "latitude": location["latitude"],
@@ -791,7 +790,6 @@ def build_map_html(schools, notes):
                 <tr><th>Fees</th><td>${{escapeHtml(school.fees)}}</td></tr>
                 <tr><th>Phase</th><td>${{escapeHtml(school.phase)}}</td></tr>
                 <tr><th>16+ hurdle</th><td>${{escapeHtml(school.further_selection)}}</td></tr>
-                <tr><th>GCSE cut-off</th><td>${{escapeHtml(school.gcse_cutoff)}}</td></tr>
               </table>
             </div>
             <div class="popup-actions">
