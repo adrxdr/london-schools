@@ -24,6 +24,7 @@ class SecondaryMapTests(unittest.TestCase):
             "Area / borough / town": "Hackney",
             "Postcode district": "E8",
             "School type": "Academy",
+            "Academic focus": "STEM / maths",
             "State/private": "State",
             "Co-ed status": "Co-ed",
             "Approx annual fees": "N/A",
@@ -51,6 +52,7 @@ class SecondaryMapTests(unittest.TestCase):
         self.assertEqual(schools[0]["alevel_cohort_size_numeric"], 120.0)
         self.assertEqual(schools[0]["oxbridge_offers_numeric"], 10.0)
         self.assertAlmostEqual(schools[0]["oxbridge_application_share"], 8.3333333333)
+        self.assertEqual(schools[0]["academic_focus"], "STEM / maths")
         self.assertEqual(schools[0]["coed_status"], "Co-ed")
         self.assertEqual(schools[0]["latitude"], 51.54)
 
@@ -64,6 +66,7 @@ class SecondaryMapTests(unittest.TestCase):
         self.assertIn("<!doctype html>", output)
         self.assertIn('id="map"', output)
         self.assertIn('id="coedFilter"', output)
+        self.assertIn('id="focusFilter"', output)
         self.assertIn("secondary-rank-marker", output)
         self.assertIn(".leaflet-tile,", output)
         self.assertIn("position: absolute;", output)
@@ -76,6 +79,8 @@ class SecondaryMapTests(unittest.TestCase):
         self.assertIn("popup-inner", output)
         self.assertIn("A-level and Oxbridge signals", output)
         self.assertIn("School profile", output)
+        self.assertIn("<th>Focus</th>", output)
+        self.assertIn("STEM / maths", output)
         self.assertIn("gap: 0.42rem", output)
         self.assertIn("padding: 0.5rem 0.6rem", output)
         self.assertIn(".metric.primary strong { font-size: 1.18rem; }", output)

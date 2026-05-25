@@ -276,6 +276,7 @@ def prepare_schools(rows, locations):
                 "postcode_district": row.get("Postcode district", ""),
                 "postcode": postcode,
                 "school_type": school_type,
+                "academic_focus": row.get("Academic focus", ""),
                 "state_private": row.get("State/private", ""),
                 "coed_status": row.get("Co-ed status", ""),
                 "fees": row.get("Approx annual fees", ""),
@@ -656,6 +657,9 @@ def build_map_html(schools, notes):
         <label>School type
           <select id="typeFilter">{render_options(schools, "school_type")}</select>
         </label>
+        <label>Academic focus
+          <select id="focusFilter">{render_options(schools, "academic_focus")}</select>
+        </label>
         <label class="wide">Selectivity
           <select id="selectivityFilter">{render_options(schools, "selectivity")}</select>
         </label>
@@ -704,6 +708,7 @@ def build_map_html(schools, notes):
       coed: document.getElementById("coedFilter"),
       borough: document.getElementById("boroughFilter"),
       type: document.getElementById("typeFilter"),
+      focus: document.getElementById("focusFilter"),
       selectivity: document.getElementById("selectivityFilter"),
       minAps: document.getElementById("minAps"),
       minOxbridgeOffers: document.getElementById("minOxbridgeOffers"),
@@ -781,6 +786,7 @@ def build_map_html(schools, notes):
               <p class="popup-section-title">School profile</p>
               <table>
                 <tr><th>Type</th><td>${{escapeHtml(school.school_type)}}</td></tr>
+                <tr><th>Focus</th><td>${{escapeHtml(school.academic_focus || "Broad academic")}}</td></tr>
                 <tr><th>Selectivity</th><td>${{escapeHtml(school.selectivity)}}</td></tr>
                 <tr><th>Fees</th><td>${{escapeHtml(school.fees)}}</td></tr>
                 <tr><th>Phase</th><td>${{escapeHtml(school.phase)}}</td></tr>
@@ -803,6 +809,7 @@ def build_map_html(schools, notes):
         school.school,
         school.borough,
         school.school_type,
+        school.academic_focus,
         school.state_private,
         school.coed_status,
         school.selectivity,
@@ -815,6 +822,7 @@ def build_map_html(schools, notes):
         (!controls.coed.value || school.coed_status === controls.coed.value) &&
         (!controls.borough.value || school.borough === controls.borough.value) &&
         (!controls.type.value || school.school_type === controls.type.value) &&
+        (!controls.focus.value || school.academic_focus === controls.focus.value) &&
         (!controls.selectivity.value || school.selectivity === controls.selectivity.value) &&
         (minAps === null || (Number.isFinite(school.aps) && school.aps >= minAps)) &&
         (minOxbridgeOffers === null || (Number.isFinite(school.oxbridge_offers_numeric) && school.oxbridge_offers_numeric >= minOxbridgeOffers));
@@ -848,7 +856,7 @@ def build_map_html(schools, notes):
           <span class="rank-pill">${{school.rank}}</span>
           <span>
             <strong>${{escapeHtml(school.school)}}</strong>
-            <small>${{escapeHtml(school.borough)}} · 2025 APS ${{formatAps(school.aps)}} · ${{escapeHtml(school.state_private)}} · ${{escapeHtml(school.coed_status)}}</small>
+            <small>${{escapeHtml(school.borough)}} · 2025 APS ${{formatAps(school.aps)}} · ${{escapeHtml(school.academic_focus || "Broad academic")}} · ${{escapeHtml(school.state_private)}} · ${{escapeHtml(school.coed_status)}}</small>
           </span>
         </button>
       `).join("");

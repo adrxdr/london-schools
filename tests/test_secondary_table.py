@@ -17,9 +17,9 @@ class SecondaryTableTests(unittest.TestCase):
 
 Source metric: test source.
 
-| School | APS per A level entry | 2024 APS per A level entry | A-level cohort size (DfE 2025) | Oxbridge applications (2022-2024) | Oxbridge offers (2022-2024) | Oxbridge offer rate | Area / borough / town | Postcode district | School type | State/private | Co-ed status | Approx annual fees | Selectivity | Further exam/selection after joining? | GCSE cut-off for sixth form? | Phase | Google Maps |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Example Academy | 49.2 | 48.5 | 120 | 30 | ≥10 | ≥33% | Hackney | E8 | Academy | State | Co-ed | N/A | comprehensive/non-selective | No extra academic exam noted | Yes | secondary-only | [Map](https://example.test/map) |
+| School | APS per A level entry | 2024 APS per A level entry | A-level cohort size (DfE 2025) | Oxbridge applications (2022-2024) | Oxbridge offers (2022-2024) | Oxbridge offer rate | Area / borough / town | Postcode district | School type | Academic focus | State/private | Co-ed status | Approx annual fees | Selectivity | Further exam/selection after joining? | GCSE cut-off for sixth form? | Phase | Google Maps |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Example Academy | 49.2 | 48.5 | 120 | 30 | ≥10 | ≥33% | Hackney | E8 | Academy | STEM / maths | State | Co-ed | N/A | comprehensive/non-selective | No extra academic exam noted | Yes | secondary-only | [Map](https://example.test/map) |
 
 Notes: These are sample notes with `code`.
 """
@@ -30,6 +30,7 @@ Notes: These are sample notes with `code`.
         self.assertEqual(headers[0], "School")
         self.assertEqual(rows[0]["School"], "Example Academy")
         self.assertEqual(rows[0]["A-level cohort size (DfE 2025)"], "120")
+        self.assertEqual(rows[0]["Academic focus"], "STEM / maths")
         self.assertEqual(rows[0]["Oxbridge offers (2022-2024)"], "≥10")
         self.assertIn("sample notes", notes)
 
@@ -46,6 +47,8 @@ Notes: These are sample notes with `code`.
         self.assertIn('id="secondaryStateFilter"', output)
         self.assertIn('id="secondaryCoedFilter"', output)
         self.assertIn('data-coed="Co-ed"', output)
+        self.assertIn('id="secondaryFocusFilter"', output)
+        self.assertIn('data-focus="STEM / maths"', output)
         self.assertIn('id="secondaryMinAps"', output)
         self.assertIn('function applyFilters()', output)
         self.assertIn('currentSort = { column: "APS per A level entry"', output)

@@ -15,8 +15,10 @@ SOURCE = (
     "Source metric: DfE 2024/25 final institution-level `aps_per_entry` for cohort "
     "`A level`, disadvantage status `Total`, used for the current ranking. The previous "
     "DfE 2023/24 A-level APS is retained for comparison. A-level cohort size uses the "
-    "DfE 2024/25 `aps_per_entry_student_count` for the matched institution. Original "
-    "distance filter: <=10 miles from central London using full postcode coordinates."
+    "DfE 2024/25 `aps_per_entry_student_count` for the matched institution. Academic "
+    "focus is an indicative editorial label rather than an official DfE metric. "
+    "Original distance filter: <=10 miles from central London using full postcode "
+    "coordinates."
 )
 DEFAULT_NOTES = (
     "Private-school fees are approximate annual senior/sixth-form fees, rounded from current "
@@ -152,6 +154,7 @@ def render_table(headers, rows):
             f'data-borough="{html.escape(row.get("Area / borough / town", ""), quote=True)}" '
             f'data-phase="{html.escape(row.get("Phase", ""), quote=True)}" '
             f'data-school-type="{html.escape(row.get("School type", ""), quote=True)}" '
+            f'data-focus="{html.escape(row.get("Academic focus", ""), quote=True)}" '
             f'data-coed="{html.escape(row.get("Co-ed status", ""), quote=True)}" '
             f'data-selectivity="{html.escape(row.get("Selectivity", ""), quote=True)}" '
             f'data-aps="{numeric_value(row.get("APS per A level entry", ""))}">'
@@ -323,6 +326,11 @@ def build_interactive_body(headers, rows, notes):
         {render_options(rows, "School type")}
       </select>
     </label>
+    <label>Academic focus
+      <select id="secondaryFocusFilter">
+        {render_options(rows, "Academic focus")}
+      </select>
+    </label>
     <label>Selectivity
       <select id="secondarySelectivityFilter">
         {render_options(rows, "Selectivity")}
@@ -369,6 +377,7 @@ def build_interactive_body(headers, rows, notes):
     borough: document.getElementById("secondaryBoroughFilter"),
     phase: document.getElementById("secondaryPhaseFilter"),
     type: document.getElementById("secondaryTypeFilter"),
+    focus: document.getElementById("secondaryFocusFilter"),
     selectivity: document.getElementById("secondarySelectivityFilter"),
     minAps: document.getElementById("secondaryMinAps"),
     limit: document.getElementById("secondaryRowLimit")
@@ -403,6 +412,7 @@ def build_interactive_body(headers, rows, notes):
       (!filters.borough.value || row.dataset.borough === filters.borough.value) &&
       (!filters.phase.value || row.dataset.phase === filters.phase.value) &&
       (!filters.type.value || row.dataset.schoolType === filters.type.value) &&
+      (!filters.focus.value || row.dataset.focus === filters.focus.value) &&
       (!filters.selectivity.value || row.dataset.selectivity === filters.selectivity.value) &&
       (!Number.isFinite(minAps) || Number(row.dataset.aps) >= minAps);
   }}
