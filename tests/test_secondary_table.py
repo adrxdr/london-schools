@@ -32,10 +32,12 @@ Notes: These are sample notes with `code`.
         self.assertEqual(rows[0]["Oxbridge offers (2022-2024)"], "≥10")
         self.assertIn("sample notes", notes)
 
-    def test_builds_sortable_filterable_html_table_in_markdown(self):
+    def test_builds_sortable_filterable_html_table(self):
         headers, rows, notes = build_table.extract_table(self.sample_markdown())
-        output = build_table.build_interactive_markdown(headers, rows, notes)
+        output = build_table.build_interactive_html(headers, rows, notes)
 
+        self.assertIn("<!doctype html>", output)
+        self.assertIn('<html lang="en">', output)
         self.assertIn('id="secondarySchoolsTable"', output)
         self.assertIn('class="sort-button"', output)
         self.assertIn('data-sort-type="number"', output)
@@ -46,6 +48,11 @@ Notes: These are sample notes with `code`.
         self.assertIn('currentSort = { column: "APS per A level entry"', output)
         self.assertIn('type="application/json"', output)
         self.assertIn('href="https://example.test/map"', output)
+        self.assertIn('href="london-secondary-schools.md"', output)
+
+    def test_interactive_table_is_written_separately_from_markdown(self):
+        self.assertEqual(build_table.SOURCE_MARKDOWN_PATH.name, "london-secondary-schools.md")
+        self.assertEqual(build_table.HTML_REPORT_PATH.name, "london-secondary-schools.html")
 
 
 if __name__ == "__main__":

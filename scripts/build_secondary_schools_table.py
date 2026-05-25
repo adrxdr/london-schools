@@ -7,7 +7,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT_PATH = ROOT / "docs" / "london-secondary-schools.md"
+SOURCE_MARKDOWN_PATH = ROOT / "docs" / "london-secondary-schools.md"
+HTML_REPORT_PATH = ROOT / "docs" / "london-secondary-schools.html"
 
 TITLE = "London schools within 10 miles with A-level APS per entry > 37"
 SOURCE = (
@@ -164,14 +165,16 @@ def render_table(headers, rows):
     return "\n".join(thead + body)
 
 
-def build_interactive_markdown(headers, rows, notes):
+def build_interactive_body(headers, rows, notes):
     payload = json.dumps(
         {"headers": headers, "rows": rows, "notes": notes},
         ensure_ascii=False,
     )
-    return f"""# {TITLE}
-
-{SOURCE}
+    return f"""<div class="secondary-report-header">
+  <h1>{html.escape(TITLE)}</h1>
+  <p class="source">{markdown_inline_to_html(SOURCE)}</p>
+  <p><a href="london-secondary-schools.md">View the static Markdown table</a></p>
+</div>
 
 <style>
   .secondary-school-tool {{
@@ -430,11 +433,27 @@ def build_interactive_markdown(headers, rows, notes):
 """
 
 
+def build_interactive_html(headers, rows, notes):
+    body = build_interactive_body(headers, rows, notes)
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{html.escape(TITLE)}</title>
+</head>
+<body>
+{body}
+</body>
+</html>
+"""
+
+
 def main():
-    markdown = REPORT_PATH.read_text(encoding="utf-8")
+    markdown = SOURCE_MARKDOWN_PATH.read_text(encoding="utf-8")
     headers, rows, notes = extract_table(markdown)
-    REPORT_PATH.write_text(build_interactive_markdown(headers, rows, notes), encoding="utf-8")
-    print(f"Enhanced {REPORT_PATH} with {len(rows)} schools.")
+    HTML_REPORT_PATH.write_text(build_interactive_html(headers, rows, notes), encoding="utf-8")
+    print(f"Built {HTML_REPORT_PATH} with {len(rows)} schools from {SOURCE_MARKDOWN_PATH}.")
 
 
 if __name__ == "__main__":
