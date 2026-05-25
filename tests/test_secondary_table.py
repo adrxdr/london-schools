@@ -17,9 +17,9 @@ class SecondaryTableTests(unittest.TestCase):
 
 Source metric: test source.
 
-| School | APS per A level entry | 2024 APS per A level entry | A-level cohort size (DfE 2025) | Oxbridge applications (2022-2024) | Oxbridge offers (2022-2024) | Oxbridge offer rate | Area / borough / town | Postcode district | School type | Academic focus | State/private | Co-ed status | Approx annual fees | Selectivity | Further exam/selection after joining? | Phase | Google Maps |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Example Academy | 49.2 | 48.5 | 120 | 30 | ≥10 | ≥33% | Hackney | E8 | Academy | STEM / maths | State | Co-ed | N/A | comprehensive/non-selective | No extra academic exam noted | secondary-only | [Map](https://example.test/map) |
+| School | APS per A level entry | 2024 APS per A level entry | A-level cohort size (DfE 2025) | Oxbridge applications (2022-2024) | Oxbridge offers (2022-2024) | Oxbridge offer rate | Area / borough / town | Postcode district | School type | Academic focus | Insight note | State/private | Co-ed status | Approx annual fees | Selectivity | Further exam/selection after joining? | Phase | Google Maps |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Example Academy | 49.2 | 48.5 | 120 | 30 | ≥10 | ≥33% | Hackney | E8 | Academy | STEM / maths | This is a useful comparison prompt. | State | Co-ed | N/A | comprehensive/non-selective | No extra academic exam noted | secondary-only | [Map](https://example.test/map) |
 
 Notes: These are sample notes with `code`.
 """
@@ -31,6 +31,7 @@ Notes: These are sample notes with `code`.
         self.assertEqual(rows[0]["School"], "Example Academy")
         self.assertEqual(rows[0]["A-level cohort size (DfE 2025)"], "120")
         self.assertEqual(rows[0]["Academic focus"], "STEM / maths")
+        self.assertEqual(rows[0]["Insight note"], "This is a useful comparison prompt.")
         self.assertEqual(rows[0]["Oxbridge offers (2022-2024)"], "≥10")
         self.assertNotIn("GCSE cut-off for sixth form?", headers)
         self.assertIn("sample notes", notes)

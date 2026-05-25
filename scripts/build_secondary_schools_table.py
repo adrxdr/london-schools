@@ -16,7 +16,8 @@ SOURCE = (
     "`A level`, disadvantage status `Total`, used for the current ranking. The previous "
     "DfE 2023/24 A-level APS is retained for comparison. A-level cohort size uses the "
     "DfE 2024/25 `aps_per_entry_student_count` for the matched institution. Academic "
-    "focus is an indicative editorial label rather than an official DfE metric. "
+    "focus and insight notes are indicative editorial labels generated from the dataset "
+    "rather than official DfE metrics. "
     "Original distance filter: <=10 miles from central London using full postcode "
     "coordinates."
 )

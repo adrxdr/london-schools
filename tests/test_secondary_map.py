@@ -25,6 +25,7 @@ class SecondaryMapTests(unittest.TestCase):
             "Postcode district": "E8",
             "School type": "Academy",
             "Academic focus": "STEM / maths",
+            "Insight note": "This is a useful comparison prompt.",
             "State/private": "State",
             "Co-ed status": "Co-ed",
             "Approx annual fees": "N/A",
@@ -52,6 +53,7 @@ class SecondaryMapTests(unittest.TestCase):
         self.assertEqual(schools[0]["oxbridge_offers_numeric"], 10.0)
         self.assertAlmostEqual(schools[0]["oxbridge_application_share"], 8.3333333333)
         self.assertEqual(schools[0]["academic_focus"], "STEM / maths")
+        self.assertEqual(schools[0]["insight_note"], "This is a useful comparison prompt.")
         self.assertEqual(schools[0]["coed_status"], "Co-ed")
         self.assertEqual(schools[0]["latitude"], 51.54)
 
@@ -78,6 +80,9 @@ class SecondaryMapTests(unittest.TestCase):
         self.assertIn("popup-inner", output)
         self.assertIn("A-level and Oxbridge signals", output)
         self.assertIn("School profile", output)
+        self.assertIn("What to notice", output)
+        self.assertIn("insight-note", output)
+        self.assertIn("This is a useful comparison prompt.", output)
         self.assertNotIn("GCSE cut-off", output)
         self.assertIn("<th>Focus</th>", output)
         self.assertIn("STEM / maths", output)

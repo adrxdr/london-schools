@@ -277,6 +277,7 @@ def prepare_schools(rows, locations):
                 "postcode": postcode,
                 "school_type": school_type,
                 "academic_focus": row.get("Academic focus", ""),
+                "insight_note": row.get("Insight note", ""),
                 "state_private": row.get("State/private", ""),
                 "coed_status": row.get("Co-ed status", ""),
                 "fees": row.get("Approx annual fees", ""),
@@ -600,6 +601,17 @@ def build_map_html(schools, notes):
       text-transform: uppercase;
     }}
     .popup td {{ color: #1e293b; }}
+    .insight-note {{
+      margin: 0;
+      padding: 0.7rem 0.8rem;
+      border: 1px solid #bfdbfe;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+      color: #1e3a8a;
+      font-size: 0.86rem;
+      font-weight: 750;
+      line-height: 1.42;
+    }}
     .popup-actions {{
       display: flex;
       flex-wrap: wrap;
@@ -782,6 +794,10 @@ def build_map_html(schools, notes):
               </div>
             </div>
             <div>
+              <p class="popup-section-title">What to notice</p>
+              <p class="insight-note">${{escapeHtml(school.insight_note || "Use this as a prompt for deeper comparison rather than a standalone judgement.")}}</p>
+            </div>
+            <div>
               <p class="popup-section-title">School profile</p>
               <table>
                 <tr><th>Type</th><td>${{escapeHtml(school.school_type)}}</td></tr>
@@ -808,6 +824,7 @@ def build_map_html(schools, notes):
         school.borough,
         school.school_type,
         school.academic_focus,
+        school.insight_note,
         school.state_private,
         school.coed_status,
         school.selectivity,
