@@ -10,11 +10,12 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE_MARKDOWN_PATH = ROOT / "docs" / "london-secondary-schools.md"
 HTML_REPORT_PATH = ROOT / "docs" / "london-secondary-schools.html"
 
-TITLE = "London schools within 10 miles with A-level APS per entry > 37"
+TITLE = "London schools within 10 miles, reranked by 2025 A-level APS"
 SOURCE = (
-    "Source metric: DfE 2024 final institution-level `points_per_entry` for cohort "
-    "`A level`, disadvantaged status `All students`. Distance filter: <=10 miles "
-    "from central London using full postcode coordinates."
+    "Source metric: DfE 2024/25 final institution-level `aps_per_entry` for cohort "
+    "`A level`, disadvantage status `Total`, used for the current ranking. The previous "
+    "DfE 2023/24 A-level APS is retained for comparison. Original distance filter: <=10 "
+    "miles from central London using full postcode coordinates."
 )
 DEFAULT_NOTES = (
     "Private-school fees are approximate annual senior/sixth-form fees, rounded from current "
@@ -123,6 +124,7 @@ def render_options(rows, key):
 def render_table(headers, rows):
     numeric_columns = {
         "APS per A level entry",
+        "2024 APS per A level entry",
         "Oxbridge applications (2022-2024)",
         "Oxbridge offers (2022-2024)",
         "Oxbridge offer rate",

@@ -17,9 +17,9 @@ class SecondaryTableTests(unittest.TestCase):
 
 Source metric: test source.
 
-| School | APS per A level entry | Oxbridge applications (2022-2024) | Oxbridge offers (2022-2024) | Oxbridge offer rate | Area / borough / town | Postcode district | School type | State/private | Co-ed status | Approx annual fees | Selectivity | Further exam/selection after joining? | GCSE cut-off for sixth form? | Phase | Google Maps |
-| --- | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Example Academy | 48.5 | 30 | ≥10 | ≥33% | Hackney | E8 | Academy | State | Co-ed | N/A | comprehensive/non-selective | No extra academic exam noted | Yes | secondary-only | [Map](https://example.test/map) |
+| School | APS per A level entry | 2024 APS per A level entry | Oxbridge applications (2022-2024) | Oxbridge offers (2022-2024) | Oxbridge offer rate | Area / borough / town | Postcode district | School type | State/private | Co-ed status | Approx annual fees | Selectivity | Further exam/selection after joining? | GCSE cut-off for sixth form? | Phase | Google Maps |
+| --- | ---: | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Example Academy | 49.2 | 48.5 | 30 | ≥10 | ≥33% | Hackney | E8 | Academy | State | Co-ed | N/A | comprehensive/non-selective | No extra academic exam noted | Yes | secondary-only | [Map](https://example.test/map) |
 
 Notes: These are sample notes with `code`.
 """

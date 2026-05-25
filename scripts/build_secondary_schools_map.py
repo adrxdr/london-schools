@@ -239,11 +239,18 @@ def prepare_schools(rows, locations):
         postcode = extract_postcode(row)
         location = locations[postcode]
         school_type = row.get("School type", "")
+        aps_2025_raw = row.get("APS per A level entry", "")
+        aps_2025_numeric = numeric_value(aps_2025_raw)
+        aps_2024_raw = row.get("2024 APS per A level entry", "")
+        aps_2024_numeric = numeric_value(aps_2024_raw)
         schools.append(
             {
                 "rank": rank,
                 "school": row.get("School", ""),
-                "aps": float(numeric_value(row.get("APS per A level entry", "")) or 0),
+                "aps": float(aps_2025_numeric) if aps_2025_numeric else None,
+                "aps_2025": aps_2025_raw,
+                "aps_2024": aps_2024_raw,
+                "aps_2024_numeric": float(aps_2024_numeric) if aps_2024_numeric else None,
                 "oxbridge_applications": row.get("Oxbridge applications (2022-2024)", ""),
                 "oxbridge_offers": row.get("Oxbridge offers (2022-2024)", ""),
                 "oxbridge_offer_rate": row.get("Oxbridge offer rate", ""),
@@ -285,6 +292,9 @@ def render_options(schools, key):
 def build_map_html(schools, notes):
     schools_json = json.dumps(schools, ensure_ascii=False)
     notes_html = markdown_links_to_html(notes)
+    numeric_aps = [school["aps"] for school in schools if school["aps"] is not None]
+    top_aps = max(numeric_aps) if numeric_aps else 0
+    floor_aps = min(numeric_aps) if numeric_aps else 0
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -605,12 +615,12 @@ def build_map_html(schools, notes):
         <p class="eyebrow">Secondary schools</p>
         <h1>A-level map</h1>
       </div>
-      <p class="subhead">Schools within 10 miles of central London with DfE 2024 A-level APS per entry above 37, ranked by APS. Postcode-level locations are approximate.</p>
+      <p class="subhead">Existing London secondary cohort reranked by DfE 2024/25 A-level APS per entry. The previous 2023/24 APS is retained in each popup for comparison. Postcode-level locations are approximate.</p>
       <p class="subhead"><a href="../london-secondary-schools.html">Open sortable table</a> · <a href="../london-secondary-schools.md">Static Markdown</a> · <a href="../">Primary map</a></p>
       <div class="meta">
         <div class="card"><strong>{len(schools)}</strong><span>Schools mapped</span></div>
-        <div class="card"><strong>{schools[0]["aps"]:.2f}</strong><span>Top APS</span></div>
-        <div class="card"><strong>{min(s["aps"] for s in schools):.2f}</strong><span>APS floor</span></div>
+        <div class="card"><strong>{top_aps:.2f}</strong><span>Top 2025 APS</span></div>
+        <div class="card"><strong>{floor_aps:.2f}</strong><span>2025 APS floor</span></div>
       </div>
       <div class="filters" aria-label="Secondary school map filters">
         <label class="wide">Search
@@ -702,6 +712,10 @@ def build_map_html(schools, notes):
       return `<div class="secondary-rank-marker${{privateClass}}" style="--marker-color: ${{markerColor(school)}}" title="#${{school.rank}} ${{escapeHtml(school.school)}}">${{school.rank}}</div>`;
     }}
 
+    function formatAps(value) {{
+      return Number.isFinite(value) ? value.toFixed(2) : "N/A";
+    }}
+
     function popupHtml(school) {{
       return `
         <div class="popup">
@@ -718,7 +732,8 @@ def build_map_html(schools, notes):
             <div>
               <p class="popup-section-title">A-level and Oxbridge signals</p>
               <div class="popup-grid">
-                <div class="metric primary"><span>A-level points per entry (DfE 2024)</span><strong>${{school.aps.toFixed(2)}}</strong></div>
+                <div class="metric primary"><span>A-level points per entry (DfE 2025)</span><strong>${{formatAps(school.aps)}}</strong></div>
+                <div class="metric"><span>Previous A-level points per entry (DfE 2024)</span><strong>${{escapeHtml(school.aps_2024 || "N/A")}}</strong></div>
                 <div class="metric"><span>Oxbridge offer rate 2022-2024</span><strong>${{escapeHtml(school.oxbridge_offer_rate)}}</strong></div>
                 <div class="metric"><span>Oxbridge applications 2022-2024</span><strong>${{escapeHtml(school.oxbridge_applications)}}</strong></div>
                 <div class="metric"><span>Oxbridge offers 2022-2024</span><strong>${{escapeHtml(school.oxbridge_offers)}}</strong></div>
@@ -762,7 +777,7 @@ def build_map_html(schools, notes):
         (!controls.borough.value || school.borough === controls.borough.value) &&
         (!controls.type.value || school.school_type === controls.type.value) &&
         (!controls.selectivity.value || school.selectivity === controls.selectivity.value) &&
-        (!Number.isFinite(minAps) || school.aps >= minAps);
+        (!Number.isFinite(minAps) || (Number.isFinite(school.aps) && school.aps >= minAps));
     }}
 
     function visibleSchools() {{
@@ -793,7 +808,7 @@ def build_map_html(schools, notes):
           <span class="rank-pill">${{school.rank}}</span>
           <span>
             <strong>${{escapeHtml(school.school)}}</strong>
-            <small>${{escapeHtml(school.borough)}} · APS ${{school.aps.toFixed(2)}} · ${{escapeHtml(school.state_private)}} · ${{escapeHtml(school.coed_status)}}</small>
+            <small>${{escapeHtml(school.borough)}} · 2025 APS ${{formatAps(school.aps)}} · ${{escapeHtml(school.state_private)}} · ${{escapeHtml(school.coed_status)}}</small>
           </span>
         </button>
       `).join("");
